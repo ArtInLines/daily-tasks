@@ -11,11 +11,10 @@ var lengthOfLongestSubstring = function (s) {
 		if (chars.has(val)) {
 			chars.clear();
 			temp = 0;
-		} else {
-			temp++;
-			chars.add(val);
-			if (temp > maxLength) maxLength = temp;
 		}
+		temp++;
+		chars.add(val);
+		if (temp > maxLength) maxLength = temp;
 	});
 	return maxLength;
 };
