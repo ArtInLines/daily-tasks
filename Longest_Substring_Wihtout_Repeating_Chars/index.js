@@ -1,29 +1,36 @@
 /**
- * Algorithm with O(n)
  * @param {string} s
  * @return {number}
  */
-var lengthOfLongestSubstring = function (s) {
+function lengthOfLongestSubstring(s) {
 	let maxLength = 0,
-		temp = 0,
-		chars = new Set();
-	s.split('').map((val) => {
-		if (chars.has(val)) {
-			chars.clear();
-			temp = 0;
+		arr = s.split(''),
+		temp = 0;
+	arr.map((val, i) => {
+		let set = new Set();
+		while (i < arr.length) {
+			if (set.has(arr[i])) break;
+			set.add(arr[i]);
+			i++, temp++;
 		}
-		temp++;
-		chars.add(val);
 		if (temp > maxLength) maxLength = temp;
+		temp = 0;
 	});
 	return maxLength;
-};
+}
 
 //
 //
 // Examples
 //
 
-const fs = require('fs');
-const inputs = JSON.parse(fs.readFileSync(`${__dirname}/examples.json`));
-inputs.map((input, i) => console.log(i, ':', lengthOfLongestSubstring(input)));
+const examples = [
+	['abcabcbb', 3],
+	['bbbbb', 1],
+	['pwwkew', 3],
+	['', 0],
+	['abb', 2],
+	['dvdf', 3],
+];
+const { test } = require('./../test');
+test(examples, lengthOfLongestSubstring);

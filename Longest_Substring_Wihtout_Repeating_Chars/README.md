@@ -13,4 +13,4 @@ Given a string s, find the length of the longest substring without repeating cha
 
 ## Solution:
 
-Looping over every character of the string, the counter adds 1 if no character has been repeated and resets the counter on a repetition, while the maximum value is stored througout and repeated.
+Looping over every character of the string: Every character gets its own nested loop to determine how long a substring starting with that char can be.
