@@ -20,6 +20,11 @@ var maxDepth = function (s) {
 // Examples
 //
 
-const fs = require('fs');
-const inputs = JSON.parse(fs.readFileSync(`${__dirname}/inputs.json`));
-inputs.map((input, i) => console.log(i, ':', maxDepth(input)));
+const examples = [
+	['(1+(2*3)+((8)/4))+1', 3],
+	['(1)+((2))+(((3)))', 3],
+	['1+(2*3)/(2-1)', 1],
+	['1n+4-3', 0],
+];
+const { test } = require('./../test');
+test(examples, maxDepth);
