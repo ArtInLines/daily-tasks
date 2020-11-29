@@ -1,3 +1,5 @@
+require('colors').setTheme(require('./colorTheme'));
+
 /**
  *
  * @param {Array} arr A 2D Array containing the input and expected output for each example, where `arr[i][0] == example input` and `arr[i][1] == expected output`
@@ -15,9 +17,9 @@ function test(arr, func) {
 				if (expected[j] !== output[j]) err = true;
 			}
 		} else if (expected != output) err = true;
-		if (err) console.log(`${input} - Expected: ${expected} - Output: ${output}`);
+		if (err) console.log(`${input} - Expected: ${expected} - Output: ${output}`.err);
 	}
-	if (!err) console.log(`Testing ${func.name} finished without errors \\o/`);
+	if (!err) console.log(`Testing ${func.name} finished without errors \\o/`.success);
 }
 
 module.exports = { test };

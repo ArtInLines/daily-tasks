@@ -1,0 +1,28 @@
+{
+	"name": "daily-tasks",
+	"version": "1.0.0",
+	"description": "Daily little Programming Tasks for me to solve",
+	"main": "index.js",
+	"scripts": {
+		"create": "",
+		"prestart": "node index.js",
+		"all": "node index.js && npm run startAll",
+		"startAll": "echo \"Longest_Substring_Wihtout_Repeating_Chars\" && npm run Longest_Substring_Wihtout_Repeating_Chars && echo \"Maximum_Nesting_Depth_of_Paranteses\" && npm run Maximum_Nesting_Depth_of_Paranteses && echo \"Two_Sum\" && npm run Two_Sum",
+		"Longest_Substring_Wihtout_Repeating_Chars": "node Longest_Substring_Wihtout_Repeating_Chars/index.js",
+		"Maximum_Nesting_Depth_of_Paranteses": "node Maximum_Nesting_Depth_of_Paranteses/index.js",
+		"Two_Sum": "node Two_Sum/index.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/ArtInLines/daily-tasks.git"
+	},
+	"author": "ArtInLines",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/ArtInLines/daily-tasks/issues"
+	},
+	"homepage": "https://github.com/ArtInLines/daily-tasks#readme",
+	"dependencies": {
+		"colors": "^1.4.0"
+	}
+}
