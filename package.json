@@ -7,10 +7,11 @@
 		"create": "",
 		"prestart": "node index.js",
 		"all": "node index.js && npm run startAll",
-		"startAll": "echo \"Longest_Substring_Wihtout_Repeating_Chars\" && npm run Longest_Substring_Wihtout_Repeating_Chars && echo \"Maximum_Nesting_Depth_of_Paranteses\" && npm run Maximum_Nesting_Depth_of_Paranteses && echo \"Two_Sum\" && npm run Two_Sum",
+		"startAll": "echo \"Longest_Substring_Wihtout_Repeating_Chars\" && npm run Longest_Substring_Wihtout_Repeating_Chars && echo \"Maximum_Nesting_Depth_of_Paranteses\" && npm run Maximum_Nesting_Depth_of_Paranteses && echo \"Median_of_Two_Sorted_Array\" && npm run Median_of_Two_Sorted_Array && echo \"Two_Sum\" && npm run Two_Sum",
 		"Longest_Substring_Wihtout_Repeating_Chars": "node Longest_Substring_Wihtout_Repeating_Chars/index.js",
 		"Maximum_Nesting_Depth_of_Paranteses": "node Maximum_Nesting_Depth_of_Paranteses/index.js",
-		"Two_Sum": "node Two_Sum/index.js"
+		"Two_Sum": "node Two_Sum/index.js",
+		"Median_of_Two_Sorted_Array": "node Median_of_Two_Sorted_Array/index.js"
 	},
 	"repository": {
 		"type": "git",
