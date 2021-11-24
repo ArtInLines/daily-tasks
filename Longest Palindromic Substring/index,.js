@@ -17,21 +17,3 @@ function isPalindrome(s) {
 	for (let i = 0; i < half; i++) if (s[i] !== s[len - i]) return false;
 	return len;
 }
-
-console.log(isPalindrome('abba'));
-return;
-
-//
-//
-// Examples
-//
-
-const examples = [
-	['babed', 'bab'],
-	['cbbd', 'bb'],
-	['annas', 'anna'],
-	['a', 'a'],
-	['tabatatataba', 'abatatataba'],
-];
-const { test } = require('./../test');
-test(examples, longestPalindrome);

@@ -11,29 +11,3 @@ function twoSum(nums, target) {
 	}
 	return null;
 }
-
-//
-//
-// Examples
-//
-
-const examples = [
-	[
-		[[15, 2, 7, 11], 9],
-		[1, 2],
-	],
-	[
-		[[3, 2, 4], 6],
-		[1, 2],
-	],
-	[
-		[[3, 3], 6],
-		[0, 1],
-	],
-	[
-		[[4, 7, 8, 2, 18, 33, 64, 22, 5, 15, 10], 32],
-		[7, 10],
-	],
-];
-const { test } = require('./../test');
-test(examples, twoSum);

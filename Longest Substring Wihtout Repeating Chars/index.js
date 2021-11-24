@@ -35,20 +35,3 @@ function slidingWindow(s) {
 	}
 	return maxLength;
 }
-
-//
-//
-// Examples
-//
-
-const examples = [
-	['abcabcbb', 3],
-	['bbbbb', 1],
-	['pwwkew', 3],
-	['', 0],
-	['abbc', 2],
-	['dvdf', 3],
-];
-const { test } = require('./../test');
-test(examples, lengthOfLongestSubstring);
-test(examples, slidingWindow);

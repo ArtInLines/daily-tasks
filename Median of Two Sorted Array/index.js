@@ -34,36 +34,3 @@ function merge(nums1, nums2) {
 	}
 	return nums2;
 }
-
-//
-//
-// Examples
-//
-
-const examples = [
-	[
-		[
-			[1, 3, 6],
-			[4, 5, 8, 15],
-		],
-		5,
-	],
-	[[[0], [1, 4, 7, 337]], 4],
-	[
-		[
-			[5, 7, 9, 11, 13, 15],
-			[0, 0, 2, 2, 2],
-		],
-		5,
-	],
-	[[[2], [0]], 1],
-	[
-		[
-			[0, 0],
-			[0, 0, 0, 100],
-		],
-		0,
-	],
-];
-const { test } = require('./../test');
-test(examples, findMedianSortedArrays);

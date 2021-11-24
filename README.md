@@ -1,3 +1,7 @@
-# Daily Tasks
+# Daily Leetcode Problems
 
-Daily little programming prompts (from for example [leetcode.com](https://www.leetcode.com)) with my solutions. I plan on using this for training in new languages and publishing it here too
+Solving coding prompts & problems (for example from [leetcode.com](https://www.leetcode.com)) and training different languages with these problems.
+
+## Unsolved
+
+-   Longest Palindromic Substring
