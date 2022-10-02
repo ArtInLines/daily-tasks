@@ -9,7 +9,7 @@
  * @param {number[][]} l2
  * @return {number[][]}
  */
-var intervalIntersection = function (l1, l2) {
+function intervalIntersection(l1, l2) {
 	const res = [];
 	let end = 0;
 	for (let i = 0, j = 0, len1 = l1.length, len2 = l2.length; i < len1 && j < len2; i++) {
@@ -32,4 +32,6 @@ var intervalIntersection = function (l1, l2) {
 		}
 	}
 	return res;
-};
+}
+
+module.exports = { intervalIntersection };

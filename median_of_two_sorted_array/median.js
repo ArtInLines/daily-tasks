@@ -34,3 +34,5 @@ function merge(nums1, nums2) {
 	}
 	return nums2;
 }
+
+module.exports = { findMedianSortedArrays };

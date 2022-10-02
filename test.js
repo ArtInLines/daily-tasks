@@ -110,7 +110,8 @@ function cmpOutput(x, y) {
 			if (!cmpOutput(x[i], y[i])) return false;
 		}
 		return true;
-	} else if (typeof x == 'object') {
+	} else if (x === null || y === undefined) return x === y;
+	else if (typeof x == 'object') {
 		let xKeys = Object.keys(x);
 		if (xKeys.length !== Object.keys(y).length) return false;
 		for (let k in xKeys) {
@@ -130,7 +131,7 @@ function cmpOutput(x, y) {
  */
 function runTests(f, tests) {
 	for (let t of tests) {
-		let res = f(t['in']);
+		let res = f(...t['in']);
 		if (!cmpOutput(res, t['out'])) return [res, t];
 	}
 	return null;
@@ -152,7 +153,7 @@ function runTestsWithPrint(f, tests, taskName) {
 }
 
 try {
-	let dname = getDName(process.argv.slice(2));
+	let dname = getDName(...process.argv.slice(2));
 	let fname = getFNameFromDName(dname);
 	let f = getFuncFromFPath(dname, fname);
 	let tests = readTestFile(dname);

@@ -35,3 +35,5 @@ function slidingWindow(s) {
 	}
 	return maxLength;
 }
+
+module.exports = { lengthOfLongestSubstring, slidingWindow };

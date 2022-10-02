@@ -9,4 +9,6 @@ function gridTraveler(m, n, memo = {}) {
 	return memo[key];
 }
 
-for (let i = 0; i <= 5; i++) for (let j = 0; j <= 5; j++) console.log(`${i} x ${j} => ${gridTraveler(i, j)}`);
+// for (let i = 0; i <= 5; i++) for (let j = 0; j <= 5; j++) console.log(`${i} x ${j} => ${gridTraveler(i, j)}`);
+
+module.exports = { gridTraveler };

@@ -17,3 +17,5 @@ function isPalindrome(s) {
 	for (let i = 0; i < half; i++) if (s[i] !== s[len - i]) return false;
 	return len;
 }
+
+module.exports = { longestPalindrome };

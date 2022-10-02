@@ -10,3 +10,5 @@ var isPalindrome = function (x) {
 	}
 	return true;
 };
+
+module.exports = { isPalindrome };

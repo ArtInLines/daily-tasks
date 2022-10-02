@@ -20,3 +20,5 @@ function threeSum(nums) {
 	}
 	return res;
 }
+
+module.exports = { threeSum };

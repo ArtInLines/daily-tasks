@@ -109,7 +109,7 @@ def cmp_out(x, y) -> bool:
 
 def run_tests(f, tests: list):
 	for t in tests:
-		res = f(t["in"])
+		res = f(*t["in"])
 		if not cmp_out(res, t["out"]):
 			return (res, t)
 	return None

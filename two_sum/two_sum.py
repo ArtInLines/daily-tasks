@@ -12,7 +12,7 @@ def two_sum(nums: list[int], target: int) -> list[int]:
 		n = nums[i]
 		m = d.get(target - n)
 		if m is not None:
-			return [i, m]
+			return [i, m] if i <= m else [m, i]
 		else:
 			d[n] = i
 	return None

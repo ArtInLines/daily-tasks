@@ -20,3 +20,5 @@ function romanToInt(s) {
 	}
 	return x;
 }
+
+module.exports = { romanToInt };
