@@ -12,5 +12,7 @@ function fib(n, memo = {}) {
 	return memo[n];
 }
 
+module.exports = { fib };
+
 // Testing
 // for (let i = 0; i <= 30; i++) console.log(`Fib of ${i} = ${fib(i)}`);

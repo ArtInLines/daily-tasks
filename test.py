@@ -14,6 +14,13 @@ class MyErr(Exception):
 		return "ERROR:\n" + self.msg
 
 
+def get_dirname(*s) -> str:
+	dirName = "_".join(s).lower() # Directory name given via argv
+	if not Path(dirName).exists():
+		raise MyErr(f"Directory '{dirName}' couldn't be found")
+	return dirName
+
+
 # Assumes directory for dirName exists
 def get_modname_from_dirname(dirName: str) -> str:
 	# Find filename of python file in specified directory
@@ -25,13 +32,13 @@ def get_modname_from_dirname(dirName: str) -> str:
 		elif fileName is None:
 			fileName = p.name
 	if fileName is None:
-		raise MyErr(f"Couldn't find a python file in the directory: '{dirName}'")
+		raise MyErr(f"Couldn't find a python file in the directory '{dirName}'")
 	fileName = '.'.join(fileName.split('.')[:-1])
 	# Load python file as module
 	return dirName + '.' + fileName
 
 
-def get_func_from_modname(modName: str):
+def get_func_from_modname(modName: str, dirName: str):
 	try:
 		mod = importlib.import_module(modName)
 	except:
@@ -48,7 +55,7 @@ def get_func_from_modname(modName: str):
 		elif f == None:
 			f = ftup[1]
 	if f is None:
-		raise MyErr(f"No applicable function was found in the module: '{modName}'\nfunctions: {funcs}\ndir({modName}) = {dir(mod)}")
+		raise MyErr(f"No applicable function was found in the module: '{modName}'\nFunctions: {funcs}")
 	return f
 
 
@@ -56,10 +63,10 @@ def get_func_from_modname(modName: str):
 def read_tests(dirName: str) -> list:
 	testFile = None
 	for p in Path(dirName).glob('*.json'):
-		if p.name.lower().startswith(("examples", "test")):
+		if p.name.lower().startswith(("example", "test")):
 			testFile = p
 	if testFile is None:
-		raise MyErr(f"No test-file was found in '{dirName}'. Make sure that a test-file (json) exists.")	
+		raise MyErr(f"No test-file (.json) was found in '{dirName}'")	
 	testData = json.loads(testFile.read_text('utf-8'))
 	tests = []
 	for t in testData:
@@ -87,8 +94,7 @@ def cmp_out(x, y) -> bool:
 		return True
 	elif isinstance(x, dict):
 		xKeys = x.keys()
-		yKeys = y.keys()
-		if len(xKeys) != len(yKeys):
+		if len(xKeys) != len(y.keys()):
 			return False
 		for k in xKeys:
 			try:
@@ -109,10 +115,10 @@ def run_tests(f, tests: list):
 	return None
 
 
-def run_tests_with_print(f, tests: list, modName: str):
+def run_tests_with_print(f, tests: list, taskName: str):
 	res = run_tests(f, tests)
 	if res is None:
-		print(f"All tests passed for module '{modName}'")
+		print(f"All tests passed for task '{taskName}'")
 	else:
 		print(f"TEST FAILED")
 		print(f"Input: {res[1]['in']}")
@@ -122,12 +128,10 @@ def run_tests_with_print(f, tests: list, modName: str):
 
 if __name__ == '__main__':
 	try:
-		dirName = "_".join(sys.argv[1:]).lower() # Directory name given via argv
-		if not Path(dirName).exists():
-			raise MyErr(f"Directory '{dirName}' couldn't be found")
-		modName = get_modname_from_dirname(dirName)
-		func = get_func_from_modname(modName)
-		tests = read_tests(dirName)
-		run_tests_with_print(func, tests, modName)
+		dirname = get_dirname(*sys.argv[1:])
+		modName = get_modname_from_dirname(dirname)
+		func = get_func_from_modname(modName, dirname)
+		tests = read_tests(dirname)
+		run_tests_with_print(func, tests, dirname)
 	except MyErr as err:
 		print(err)
