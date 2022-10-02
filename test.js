@@ -2,7 +2,7 @@ const process = require('process');
 const fs = require('fs');
 const path = require('path/posix');
 
-const langs = new Map([['js'], ['c'], ['py'], ['rb'], ['pl'], ['lsp']]);
+const langs = new Set([['js', 'c', 'py', 'rb', 'pl', 'lsp']]);
 
 function main() {
 	const args = process.argv.slice(2);

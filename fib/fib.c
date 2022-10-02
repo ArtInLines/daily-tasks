@@ -7,7 +7,7 @@ unsigned int fibHelper(unsigned int n, unsigned int* memo) {
     }
 
 unsigned int fib(unsigned int n) {
-    if (n <= 2) return 1;
+    if (n < 2) return n;
 
     unsigned int* memo = malloc((n - 1) * sizeof(unsigned int));
     unsigned int i; for (i = 2; i < n - 1; i++) memo[i] = 0;
