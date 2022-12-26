@@ -1,0 +1,26 @@
+[
+	{
+		"in": ["abab", "ababa", "abanne", "a band", "ab and a short string"],
+		"out": "a"
+	},
+	{
+		"in": ["lala", "ablfalal", "flafmffeiflafbeofal", "haletnealafnce"],
+		"out": ""
+	},
+	{
+		"in": ["kjfeifndka", "jfkejalfd", "gkdlfad", "fjkdasöflks", "gdkajdfjslkdfjs"],
+		"out": ""
+	},
+	{
+		"in": ["prefix", "prefux", "prelong", "preshort", "pretty"],
+		"out": "pre"
+	},
+	{
+		"in": ["just a bunch of shit", "just a bunch of words", "just a bunch of stuff", "just a bunch o' gold"],
+		"out": "just a bunch o"
+	},
+	{
+		"in": ["nope", "yep", "haha", "poop", "lol"],
+		"out": ""
+	}
+]

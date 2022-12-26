@@ -1,0 +1,22 @@
+[
+	{
+		"in": "babed",
+		"out": "bab"
+	},
+	{
+		"in": "cbbd",
+		"out": "bb"
+	},
+	{
+		"in": "annas",
+		"out": "anna"
+	},
+	{
+		"in": "a",
+		"out": "a"
+	},
+	{
+		"in": "tabatatataba",
+		"out": "abatatataba"
+	}
+]
