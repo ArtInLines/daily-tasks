@@ -1,0 +1,4 @@
+[
+	{ "name": "python", "cmd": "py", "test": "./test.py", "endings": ["py"] },
+	{ "name": "javascript (node)", "cmd": "node", "test": "./test.js", "endings": ["js"] }
+]
