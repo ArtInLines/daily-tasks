@@ -9,40 +9,38 @@ class MyErr(Exception):
 	def __init__(self, msg) -> None:
 		super().__init__(msg)
 		self.msg = msg
-	
+
 	def __str__(self) -> str:
 		return "ERROR:\n" + self.msg
 
 
 def get_dirname(*s) -> str:
-	dirName = "_".join(s).lower() # Directory name given via argv
-	if not Path(dirName).exists():
-		raise MyErr(f"Directory '{dirName}' couldn't be found")
-	return dirName
+	dirname = "_".join(s).lower() # Directory name given via argv
+	if not Path(dirname).exists():
+		raise MyErr(f"Directory '{dirname}' couldn't be found")
+	return dirname
 
 
-# Assumes directory for dirName exists
-def get_modname_from_dirname(dirName: str) -> str:
+# Assumes directory for dirname exists
+def get_modname_from_dirname(dirname: str) -> str:
 	# Find filename of python file in specified directory
-	# dirName, 'master' or 'main' are preferred over other names
-	fileName = None
-	for p in Path(dirName).glob('*.py'):
-		if p.name.lower().startswith((dirName, "main", "master")):
-			fileName = p.name
-		elif fileName is None:
-			fileName = p.name
-	if fileName is None:
-		raise MyErr(f"Couldn't find a python file in the directory '{dirName}'")
-	fileName = '.'.join(fileName.split('.')[:-1])
+	# dirname, 'master' or 'main' are preferred over other names
+	filename = None
+	for p in Path(dirname).glob('*.py'):
+		if filename is None or p.name.lower().startswith((dirname, "main", "master")):
+			filename = p.name
+	if filename is None:
+		raise MyErr(f"Couldn't find a python file in the directory '{dirname}'")
+	filename = '.'.join(filename.split('.')[:-1])
 	# Load python file as module
-	return dirName + '.' + fileName
+	return dirname + '.' + filename
 
 
-def get_func_from_modname(modName: str, dirName: str):
+def get_func_from_modname(modname: str, dirname: str):
 	try:
-		mod = importlib.import_module(modName)
+		mod = importlib.import_module(modname)
 	except:
-		raise MyErr(f"Module '{modName}' couldn't be found.")
+		raise MyErr(f"Module '{modname}' couldn't be found.")
 	# Get functions in module
 	funcs = [x for x in getmembers(mod) if isfunction(x[1])]
 	# Each entry in funcs is a tuple of the form (name, func-ptr)
@@ -50,23 +48,23 @@ def get_func_from_modname(modName: str, dirName: str):
 	# Functions with names specified in the "startswith" function are prefered
 	f = None
 	for ftup in funcs:
-		if ftup[0].lower().startswith((dirName, "".join(dirName.split('_')), 'main', 'master', 'run')):
+		if ftup[0].lower().startswith((dirname, "".join(dirname.split('_')), 'main', 'master', 'run')):
 			f = ftup[1]
 		elif f == None:
 			f = ftup[1]
 	if f is None:
-		raise MyErr(f"No applicable function was found in the module: '{modName}'\nFunctions: {funcs}")
+		raise MyErr(f"No applicable function was found in the module: '{modname}'\nFunctions: {funcs}")
 	return f
 
 
-# Assumes directory for dirName exists
-def read_tests(dirName: str) -> list:
+# Assumes directory for dirname exists
+def read_tests(dirname: str) -> list:
 	testFile = None
-	for p in Path(dirName).glob('*.json'):
+	for p in Path(dirname).glob('*.json'):
 		if p.name.lower().startswith(("example", "test")):
 			testFile = p
 	if testFile is None:
-		raise MyErr(f"No test-file (.json) was found in '{dirName}'")	
+		raise MyErr(f"No test-file (.json) was found in '{dirname}'")
 	testData = json.loads(testFile.read_text('utf-8'))
 	tests = []
 	for t in testData:
@@ -78,7 +76,7 @@ def read_tests(dirName: str) -> list:
 			inp = t["in"]
 			out = t["out"]
 		else:
-			raise MyErr(f"Each test should be stored as a list or dict in the testFile '{testFile.name}' in the directoy '{dirName}'.")
+			raise MyErr(f"Each test should be stored as a list or dict in the testFile '{testFile.name}' in the directoy '{dirname}'.")
 		tests.append({"in": inp, "out": out})
 	return tests
 
@@ -93,32 +91,35 @@ def cmp_out(x, y) -> bool:
 				return False
 		return True
 	elif isinstance(x, dict):
-		xKeys = x.keys()
-		if len(xKeys) != len(y.keys()):
+		x_keys = x.keys()
+		if len(x_keys) != len(y.keys()):
 			return False
-		for k in xKeys:
+		for k in x_keys:
 			try:
 				if not cmp_out(x[k], y[k]):
 					return False
 			except:
 				return False
-		return True	
+		return True
 	else:
 		return x == y
 
 
 def run_tests(f, tests: list):
 	for t in tests:
-		res = f(*t["in"])
+		if type(t["in"]) is list:
+			res = f(*t["in"])
+		else:
+			res = f(t["in"])
 		if not cmp_out(res, t["out"]):
 			return (res, t)
 	return None
 
 
-def run_tests_with_print(f, tests: list, taskName: str):
+def run_tests_with_print(f, tests: list, taskname: str):
 	res = run_tests(f, tests)
 	if res is None:
-		print(f"All tests passed for task '{taskName}'")
+		print(f"All tests passed for task '{taskname}'")
 	else:
 		print(f"TEST FAILED")
 		print(f"Input: {res[1]['in']}")
@@ -129,8 +130,8 @@ def run_tests_with_print(f, tests: list, taskName: str):
 if __name__ == '__main__':
 	try:
 		dirname = get_dirname(*sys.argv[1:])
-		modName = get_modname_from_dirname(dirname)
-		func = get_func_from_modname(modName, dirname)
+		modname = get_modname_from_dirname(dirname)
+		func = get_func_from_modname(modname, dirname)
 		tests = read_tests(dirname)
 		run_tests_with_print(func, tests, dirname)
 	except MyErr as err:

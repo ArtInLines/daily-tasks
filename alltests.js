@@ -20,7 +20,7 @@ async function runScript(idx = 0, scripts = testScripts) {
 	s.stderr.on('data', (chunk) => {
 		console.log(String(chunk));
 	});
-	new Promise((resolve, reject) => {
+	return new Promise((resolve, reject) => {
 		s.on('close', () => {
 			runScript(idx + 1, scripts).then(resolve);
 		});

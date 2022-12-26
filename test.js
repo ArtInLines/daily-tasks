@@ -131,7 +131,7 @@ function cmpOutput(x, y) {
  */
 function runTests(f, tests) {
 	for (let t of tests) {
-		let res = f(...t['in']);
+		let res = Array.isArray(t['in']) ? f(...t['in']) : f(t['in']);
 		if (!cmpOutput(res, t['out'])) return [res, t];
 	}
 	return null;
