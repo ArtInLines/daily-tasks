@@ -63,5 +63,4 @@ We use two pointers, i and j, to virtually manage "discarding" A[0] or B[0] repe
 
 ### Complexity Analysis
 
--   Time Complexity: O(M+N)O(M + N)O(M+N), where M,NM, NM,N are the lengths of A and B respectively.
--   Space Complexity: O(M+N)O(M + N)O(M+N), the maximum size of the answer.
+-   Time Complexity: O(M+N), where M,N are the lengths of A and B respectively.
