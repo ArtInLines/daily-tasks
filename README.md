@@ -2,7 +2,15 @@
 
 Solving coding prompts & problems (for example from [leetcode.com](https://www.leetcode.com)) and training different languages with these problems.
 
-## Writing Tests
+## Benchmarking
+
+It might be fun and insightful to benchmark different solutions and to optimize them if possible
+
+## Automatic Testing
+
+This section is concerned with automatically determining the vaidity of my solutions.
+
+### Writing Tests
 
 -   For each programming language that's used, a seperate "test"-file must be located in the root-folder
 -   Each test file should have its own entry in `languages.json`.
@@ -20,14 +28,14 @@ Solving coding prompts & problems (for example from [leetcode.com](https://www.l
 -   The following should be printed if any test fails:
     -   `TEST FAILED\nInput: <input>\nExpected Output: <expected-output>\nActual Output: <actual-output>`
 
-## Requirements for tests.json
+### Requirements for tests.json
 
 -   All Tests must be written as json files either called "tests.json"
 -   All Tests-Files must be lists of tests
 -   Each test must be stored as an object with an "in" and "out" key.
 -   Inputs/Oututs can be any type
 
-## TODO
+### TODO
 
 -   Mark all unfinished files as such
 -   Add tests for different programming languages
