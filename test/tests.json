@@ -1,0 +1,22 @@
+{
+	"fact": [
+		{
+			"input": "4",
+			"output": "24"
+		},
+		{
+			"input": "6",
+			"output": "720"
+		}
+	],
+	"fib": [
+		{
+			"input": "4",
+			"output": "3"
+		},
+		{
+			"input": "10",
+			"output": "55"
+		}
+	]
+}
