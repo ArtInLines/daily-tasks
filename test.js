@@ -274,7 +274,7 @@ async function main() {
 	});
 	if (flags.langs.length === 0) flags.allLangs = true;
 
-	let toTest = getProblemFiles(getTestJsons(path.join(__dirname, 'test')), flags.langs, flags.problems, flags.allTests, flags.allLangs);
+	let toTest = getProblemFiles(getTestJsons(path.join(__dirname)), flags.langs, flags.problems, flags.allTests, flags.allLangs);
 	for await (const t of toTest) {
 		await test(t.name, t.files, t.inputs, t.outputs, flags.rec);
 	}

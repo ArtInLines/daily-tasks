@@ -1,0 +1,58 @@
+[
+	{ "name": "fib", "ins": ["0", "1", "2", "6", "8", "10", "14", "18", "25", "29", "30", "34"], "outs": ["0", "1", "1", "8", "21", "55", "377", "2584", "75025", "514229", "832040", "5702887"] },
+	{
+		"name": "grid_traveler",
+		"ins": [
+			"[0, 8]",
+			"[2, 7]",
+			"[3, 4]",
+			"[3, 8]",
+			"[4, 4]",
+			"[6, 2]",
+			"[6, 5]",
+			"[6, 11]",
+			"[10, 7]",
+			"[8, 8]",
+			"[8, 9]",
+			"[14, 7]",
+			"[3, 10]",
+			"[6, 9]",
+			"[5, 13]",
+			"[18, 4]",
+			"[9, 7]",
+			"[10, 10]"
+		],
+		"outs": ["0", "7", "10", "36", "20", "6", "126", "3003", "5005", "3432", "6435", "27132", "55", "1287", "1820", "1140", "3003", "48620"]
+	},
+	{
+		"name": "interval_list_intersections",
+		"ins": [
+			"[[[0, 2],[5, 10],[13, 23],[24, 25]],[[1, 5],[8, 12],[15, 24],[25, 26]]]",
+			"[[[1, 3],[5, 9]],[]]",
+			"[[],[[4, 8],[10, 12]]]",
+			"[[[1, 7]], [[3, 10]]]",
+			"[[[1, 8],[9, 11],[15, 20]],[[7, 10],[10, 13],[19, 32]]]"
+		],
+		"outs": ["[[1, 2],[5, 5],[8, 10],[15, 23],[24, 24],[25, 25]]", "[]", "[]", "[[3, 7]]", "[[7, 8],[9, 10],[10, 11],[19, 20]]"]
+	},
+	{
+		"name": "longest_common_prefix",
+		"ins": [
+			"['abab', 'ababa', 'abanne', 'a band', 'ab and a short string']",
+			"['lala', 'ablfalal', 'flafmffeiflafbeofal', 'haletnealafnce']",
+			"['kjfeifndka', 'jfkejalfd', 'gkdlfad', 'fjkdasöflks', 'gdkajdfjslkdfjs']",
+			"['prefix', 'prefux', 'prelong', 'preshort', 'pretty']",
+			"['just a bunch of shit', 'just a bunch of words', 'just a bunch of stuff', 'just a bunch o' gold']",
+			"['nope', 'yep', 'haha', 'poop', 'lol']"
+		],
+		"outs": ["a", "", "", "pre", "just a bunch o", ""]
+	},
+	{ "name": "longest_palindromic_substring", "ins": ["babed", "cbbd", "annas", "a", "tabatatataba"], "outs": ["bab", "bb", "anna", "a", "abatatataba"] },
+	{ "name": "longest_substring_wihtout_repeating_chars", "ins": ["abcabcbb", "bbbbb", "pwwkew", "", "abbc", "dvdf"], "outs": [3, 1, 3, 0, 2, 3] },
+	{ "name": "maximum_nesting_depth_of_parantheses", "ins": ["(1+(2*3)+((8)/4))+1", "(1)+((2))+(((3)))", "1+(2*3)/(2-1)", "1n+4-3"], "outs": [3, 3, 1, 0] },
+	{
+		"name": "median_of_two_sorted_array",
+		"ins": ["[[], [1, 3, 4, 5, 6, 8, 15]]", "[[], [0, 1, 4, 7, 337]]", "[[5, 7, 9, 11, 13, 15],[0, 0, 2, 2, 2]]", "[[2], [0]]", "[[], [0, 0, 0, 0, 0, 100]]"],
+		"outs": ["5", "4", "5", "1", "0"]
+	}
+]
