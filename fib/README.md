@@ -1,5 +1,5 @@
 # FIbonacci Numbers
 
-The n-th Fibonacci Number is `fib(n-1) + fib(n-2)`
+The n-th Fibonacci Number is `fib(n-1) + fib(n-2)`, where `fib(0) = 0` and `fib(1) = 1`.
 
-Solution will of course be done recursively
+This is a classic dynamic programming problem.
