@@ -6,6 +6,8 @@ const child_process = require('child_process');
 const { exit } = require('process');
 const exec = util.promisify(child_process.exec);
 
+// TODO: Add ignored Folders
+
 const COLORS = {
 	Reset: '\x1b[0m',
 	Bright: '\x1b[1m',
@@ -63,10 +65,19 @@ Options:
     -h    --help     Show this Help text. Any options and problems provided will be ignored.`;
 
 const EXT_TO_CMD = {
-	js: (file, name, input) => `node ${file} ${input}`,
-	py: (file, name, input) => `py ${file} ${input}`,
-	c: (file, name, input) => [`gcc -o ${name} ${file}`, `${name} ${input}`],
+	js: { run: (input, name) => `node ${name}.js ${input}` },
+	py: { run: (input, name) => `py ${name}.py ${input}` },
+	c: { pre: (name) => `gcc -o ${name} ${name}.c`, run: (input, name) => `${name} ${input}` },
+	rs: { pre: (name) => `rustc ${name}.rs -o ${name}`, run: (input, name) => `${name} ${input}` },
+	java: { pre: (name) => `javac ${name}.java`, run: (input, name) => `java ${name} ${input}` },
+	stlx: { run: (input, name) => `setlX ${name}.stlx ${input}` },
+	jl: { run: (input, name) => `julia ${name}.jl ${input}` },
+	lsp: { run: (input, name) => `sbcl --noinform --load ${name}.lsp --quit ${input}` },
+	rb: { run: (input, name) => `ruby ${name}.rb ${input}` },
+	kt: { pre: (name) => `kotlinc ${name}.kt -include-runtime -d ${name}.jar`, run: (input, name) => `java -jar ${name}.jar` },
 };
+
+const IGNORED_EXTS = ['exe', 'o', 'class', 'pyc'];
 
 function getTestJsons(dir = __dirname) {
 	const res = [];
@@ -78,6 +89,27 @@ function getTestJsons(dir = __dirname) {
 		}
 	});
 	return res;
+}
+
+function getFilesRecursively(basedir, basename, allLangs, langs, recdirs = [], foundLangs = []) {
+	basename = basename.toLowerCase();
+	const dirents = fs.readdirSync(path.join(basedir, ...recdirs), { withFileTypes: true });
+	const a = dirents
+		.filter(
+			(d) =>
+				d.isFile() &&
+				d.name.toLowerCase().startsWith(basename + '.') &&
+				(allLangs ||
+					langs.find((l) => {
+						if (d.name.endsWith(l)) {
+							foundLangs[l] = true;
+							return true;
+						} else return false;
+					}))
+		)
+		.map((d) => d.name);
+	const b = dirents.filter((d) => d.isDirectory()).flatMap((d) => getFilesRecursively(basedir, basename, allLangs, langs, [...recdirs, d.name], foundLangs));
+	return [...a, ...b].map((x) => path.join(...recdirs, x));
 }
 
 // Return list of objects: [{name, inputs, outputs, files}]
@@ -92,25 +124,12 @@ function getProblemFiles(jsonpaths, langs, problems, allTests, allLangs) {
 	jsonpaths.forEach((fd) => {
 		const json = JSON.parse(fs.readFileSync(fd, { encoding: 'utf-8' }));
 		const dir = path.dirname(fd);
-		const dirents = fs.readdirSync(dir, { withFileTypes: true }).filter((d) => d.isFile());
 		for (const key in json) {
 			const k = key.toLowerCase();
 			const idx = problems.findIndex((p) => p == k);
 			if (allTests || idx >= 0) {
 				problems.pop(idx);
-				const testFiles = dirents
-					.filter(
-						(d) =>
-							d.name.startsWith(key + '.') &&
-							(allLangs ||
-								langs.find((l) => {
-									if (d.name.endsWith(l)) {
-										foundLangs[l] = true;
-										return true;
-									} else return false;
-								}))
-					)
-					.map((f) => path.join(dir, f.name));
+				const testFiles = getFilesRecursively(dir, key, allLangs, langs, [], foundLangs).map((f) => path.join(dir, f));
 
 				if (testFiles.length === 0) {
 					if (allLangs) {
@@ -149,7 +168,28 @@ function getProblemFiles(jsonpaths, langs, problems, allTests, allLangs) {
 	return files;
 }
 
-async function test(name, files, inputs, outputs, toRecord) {
+async function runCommand(cmd, f, name, ext, input = null) {
+	try {
+		// info("Running Command '" + cmd + "'");
+		let res = await exec(cmd, { cwd: path.dirname(f) });
+		return res;
+	} catch (error) {
+		fail(`${name}.${ext} failed.`, 0);
+		failInfo(`Command:`, 1);
+		failInfo(`${cmd}`, 2);
+		if (input !== null) {
+			failInfo(`Input:`, 1);
+			failInfo(`${input}`, 2);
+		}
+		failInfo(`Error Code:`, 1);
+		failInfo(`${error.status ?? 'Unknown'}`, 2);
+		failInfo(`Error Message:`, 1);
+		failInfo(`${error.message}`, 2);
+		return null;
+	}
+}
+
+async function test(name, files, inputs, outputs, toRecord, basedir) {
 	if (toRecord) {
 		console.error("Recording hasn't been implemented yet");
 		exit(1);
@@ -163,48 +203,46 @@ async function test(name, files, inputs, outputs, toRecord) {
 	info(`Testing "${name}"`);
 	// console.log({ name, files, inputs, outputs, toRecord });
 	for await (const f of files) {
-		let ext = f.split('.').at(-1);
+		let ext = path.extname(f).slice(1);
+		let fname = path.basename(f).slice(0, -ext.length - 1);
 		if (EXT_TO_CMD[ext] === undefined) {
+			if (IGNORED_EXTS.includes(ext)) continue;
 			// TODO: Error Handling
 			console.error("Error Handling for Testing isn't implemented yet");
+			console.error({ f, ext });
 			exit(1);
 		} else {
 			// TODO: Check that inputs and outputs have the same length
 			// TODO: Allow non-arrays by transforming strings to arrays
 			// TODO: Change code in other places to expect arrays instead of strings to inputs/outputs
 			let success = true;
+
+			if (typeof EXT_TO_CMD[ext].pre === 'function') {
+				if ((await runCommand(EXT_TO_CMD[ext].pre(name), f, name, ext)) === null) {
+					success = false;
+				}
+			}
+
 			for (let i = 0; success && i < inputs.length; i++) {
 				const input = inputs[i];
 				const output = outputs[i];
-				let cmds = EXT_TO_CMD[ext](f, name, input);
-				let res;
-				if (!Array.isArray(cmds)) cmds = [cmds];
-				for (const cmd of cmds) {
-					try {
-						res = await exec(cmd);
-					} catch (error) {
-						success = false;
-						fail(`${name}.${ext} failed.`, 0);
-						failInfo(`Input:`, 1);
-						failInfo(`${input}`, 2);
-						failInfo(`Error Code:`, 1);
-						failInfo(`${error.status ?? 'Unknown'}`, 2);
-						failInfo(`Error Message:`, 1);
-						failInfo(`${error.message}`, 2);
-						res = undefined;
-						break;
-					}
-				}
 
-				if (res && output.trim() !== res.stdout.trim()) {
+				let cmd = EXT_TO_CMD[ext].run(input, fname);
+
+				let res = await runCommand(cmd, f, name, ext, input);
+				if (res) {
+					if (output.trim() !== res.stdout.trim()) {
+						success = false;
+						fail(`${name}.${ext} didn't produce the expected output:`);
+						failInfo('Input:', 1);
+						failInfo(`${input}`, 2);
+						failInfo(`Expected:`, 1);
+						failInfo(output, 2);
+						failInfo(`Received:`, 1);
+						failInfo(res.stdout, 2);
+					}
+				} else {
 					success = false;
-					fail(`${name}.${ext} didn't produce the expected output:`);
-					failInfo('Input:', 1);
-					failInfo(`${input}`, 2);
-					failInfo(`Expected:`, 1);
-					failInfo(output, 2);
-					failInfo(`Received:`, 1);
-					failInfo(res.stdout, 2);
 				}
 			}
 
@@ -274,9 +312,9 @@ async function main() {
 	});
 	if (flags.langs.length === 0) flags.allLangs = true;
 
-	let toTest = getProblemFiles(getTestJsons(path.join(__dirname)), flags.langs, flags.problems, flags.allTests, flags.allLangs);
+	let toTest = getProblemFiles(getTestJsons(__dirname), flags.langs, flags.problems, flags.allTests, flags.allLangs);
 	for await (const t of toTest) {
-		await test(t.name, t.files, t.inputs, t.outputs, flags.rec);
+		await test(t.name, t.files, t.inputs, t.outputs, flags.rec, __dirname);
 	}
 }
 

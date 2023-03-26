@@ -1,58 +1,79 @@
-[
-	{ "name": "fib", "ins": ["0", "1", "2", "6", "8", "10", "14", "18", "25", "29", "30", "34"], "outs": ["0", "1", "1", "8", "21", "55", "377", "2584", "75025", "514229", "832040", "5702887"] },
-	{
-		"name": "grid_traveler",
-		"ins": [
-			"[0, 8]",
-			"[2, 7]",
-			"[3, 4]",
-			"[3, 8]",
-			"[4, 4]",
-			"[6, 2]",
-			"[6, 5]",
-			"[6, 11]",
-			"[10, 7]",
-			"[8, 8]",
-			"[8, 9]",
-			"[14, 7]",
-			"[3, 10]",
-			"[6, 9]",
-			"[5, 13]",
-			"[18, 4]",
-			"[9, 7]",
-			"[10, 10]"
-		],
-		"outs": ["0", "7", "10", "36", "20", "6", "126", "3003", "5005", "3432", "6435", "27132", "55", "1287", "1820", "1140", "3003", "48620"]
-	},
-	{
-		"name": "interval_list_intersections",
-		"ins": [
-			"[[[0, 2],[5, 10],[13, 23],[24, 25]],[[1, 5],[8, 12],[15, 24],[25, 26]]]",
-			"[[[1, 3],[5, 9]],[]]",
-			"[[],[[4, 8],[10, 12]]]",
-			"[[[1, 7]], [[3, 10]]]",
-			"[[[1, 8],[9, 11],[15, 20]],[[7, 10],[10, 13],[19, 32]]]"
-		],
-		"outs": ["[[1, 2],[5, 5],[8, 10],[15, 23],[24, 24],[25, 25]]", "[]", "[]", "[[3, 7]]", "[[7, 8],[9, 10],[10, 11],[19, 20]]"]
-	},
-	{
-		"name": "longest_common_prefix",
-		"ins": [
-			"['abab', 'ababa', 'abanne', 'a band', 'ab and a short string']",
-			"['lala', 'ablfalal', 'flafmffeiflafbeofal', 'haletnealafnce']",
-			"['kjfeifndka', 'jfkejalfd', 'gkdlfad', 'fjkdasöflks', 'gdkajdfjslkdfjs']",
-			"['prefix', 'prefux', 'prelong', 'preshort', 'pretty']",
-			"['just a bunch of shit', 'just a bunch of words', 'just a bunch of stuff', 'just a bunch o' gold']",
-			"['nope', 'yep', 'haha', 'poop', 'lol']"
-		],
-		"outs": ["a", "", "", "pre", "just a bunch o", ""]
-	},
-	{ "name": "longest_palindromic_substring", "ins": ["babed", "cbbd", "annas", "a", "tabatatataba"], "outs": ["bab", "bb", "anna", "a", "abatatataba"] },
-	{ "name": "longest_substring_wihtout_repeating_chars", "ins": ["abcabcbb", "bbbbb", "pwwkew", "", "abbc", "dvdf"], "outs": [3, 1, 3, 0, 2, 3] },
-	{ "name": "maximum_nesting_depth_of_parantheses", "ins": ["(1+(2*3)+((8)/4))+1", "(1)+((2))+(((3)))", "1+(2*3)/(2-1)", "1n+4-3"], "outs": [3, 3, 1, 0] },
-	{
-		"name": "median_of_two_sorted_array",
-		"ins": ["[[], [1, 3, 4, 5, 6, 8, 15]]", "[[], [0, 1, 4, 7, 337]]", "[[5, 7, 9, 11, 13, 15],[0, 0, 2, 2, 2]]", "[[2], [0]]", "[[], [0, 0, 0, 0, 0, 100]]"],
-		"outs": ["5", "4", "5", "1", "0"]
-	}
-]
+{
+	"fib": [
+		{ "input": "0", "output": "0" },
+		{ "input": "1", "output": "1" },
+		{ "input": "2", "output": "1" },
+		{ "input": "6", "output": "8" },
+		{ "input": "8", "output": "21" },
+		{ "input": "10", "output": "55" },
+		{ "input": "14", "output": "377" },
+		{ "input": "18", "output": "2584" },
+		{ "input": "25", "output": "75025" },
+		{ "input": "29", "output": "514229" },
+		{ "input": "30", "output": "832040" },
+		{ "input": "34", "output": "5702887" }
+	],
+	"grid_traveler": [
+		{ "input": "[0, 8]", "output": "0" },
+		{ "input": "[2, 7]", "output": "7" },
+		{ "input": "[3, 4]", "output": "10" },
+		{ "input": "[3, 8]", "output": "36" },
+		{ "input": "[4, 4]", "output": "20" },
+		{ "input": "[6, 2]", "output": "6" },
+		{ "input": "[6, 5]", "output": "126" },
+		{ "input": "[6, 11]", "output": "3003" },
+		{ "input": "[10, 7]", "output": "5005" },
+		{ "input": "[8, 8]", "output": "3432" },
+		{ "input": "[8, 9]", "output": "6435" },
+		{ "input": "[14, 7]", "output": "27132" },
+		{ "input": "[3, 10]", "output": "55" },
+		{ "input": "[6, 9]", "output": "1287" },
+		{ "input": "[5, 13]", "output": "1820" },
+		{ "input": "[18, 4]", "output": "1140" },
+		{ "input": "[9, 7]", "output": "3003" },
+		{ "input": "[10, 10]", "output": "48620" }
+	],
+	"interval_list_intersections": [
+		{ "input": "[[[0, 2],[5, 10],[13, 23],[24, 25]],[[1, 5],[8, 12],[15, 24],[25, 26]]]", "output": "[[1, 2],[5, 5],[8, 10],[15, 23],[24, 24],[25, 25]]" },
+		{ "input": "[[[1, 3],[5, 9]],[]]", "output": "[]" },
+		{ "input": "[[],[[4, 8],[10, 12]]]", "output": "[]" },
+		{ "input": "[[[1, 7]], [[3, 10]]]", "output": "[[3, 7]]" },
+		{ "input": "[[[1, 8],[9, 11],[15, 20]],[[7, 10],[10, 13],[19, 32]]]", "output": "[[7, 8],[9, 10],[10, 11],[19, 20]]" }
+	],
+	"longest_common_prefix": [
+		{ "input": "['abab', 'ababa', 'abanne', 'a band', 'ab and a short string']", "output": "a" },
+		{ "input": "['lala', 'ablfalal', 'flafmffeiflafbeofal', 'haletnealafnce']", "output": "" },
+		{ "input": "['kjfeifndka', 'jfkejalfd', 'gkdlfad', 'fjkdasöflks', 'gdkajdfjslkdfjs']", "output": "" },
+		{ "input": "['prefix', 'prefux', 'prelong', 'preshort', 'pretty']", "output": "pre" },
+		{ "input": "['just a bunch of shit', 'just a bunch of words', 'just a bunch of stuff', 'just a bunch o' gold']", "output": "just a bunch o" },
+		{ "input": "['nope', 'yep', 'haha', 'poop', 'lol']", "output": "" }
+	],
+	"longest_palindromic_substring": [
+		{ "input": "babed", "output": "bab" },
+		{ "input": "cbbd", "output": "bb" },
+		{ "input": "annas", "output": "anna" },
+		{ "input": "a", "output": "a" },
+		{ "input": "tabatatataba", "output": "abatatataba" }
+	],
+	"longest_substring_wihtout_repeating_chars": [
+		{ "input": "abcabcbb", "output": 3 },
+		{ "input": "bbbbb", "output": 1 },
+		{ "input": "pwwkew", "output": 3 },
+		{ "input": "", "output": 0 },
+		{ "input": "abbc", "output": 2 },
+		{ "input": "dvdf", "output": 3 }
+	],
+	"maximum_nesting_depth_of_parantheses": [
+		{ "input": "(1+(2*3)+((8)/4))+1", "output": 3 },
+		{ "input": "(1)+((2))+(((3)))", "output": 3 },
+		{ "input": "1+(2*3)/(2-1)", "output": 1 },
+		{ "input": "1n+4-3", "output": 0 }
+	],
+	"median_of_two_sorted_array": [
+		{ "input": "[[], [1, 3, 4, 5, 6, 8, 15]]", "output": "5" },
+		{ "input": "[[], [0, 1, 4, 7, 337]]", "output": "4" },
+		{ "input": "[[5, 7, 9, 11, 13, 15],[0, 0, 2, 2, 2]]", "output": "5" },
+		{ "input": "[[2], [0]]", "output": "1" },
+		{ "input": "[[], [0, 0, 0, 0, 0, 100]]", "output": "0" }
+	]
+}
