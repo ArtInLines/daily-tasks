@@ -113,7 +113,6 @@ function getFilesRecursively(basedir, basename, allLangs, langs, recdirs = [], f
 }
 
 // Return list of objects: [{name, inputs, outputs, files}]
-// TODO: Expected Return value doesn't match actual return values
 function getProblemFiles(jsonpaths, langs, problems, allTests, allLangs) {
 	const foundLangs = {};
 	for (const l of langs) {
@@ -212,9 +211,6 @@ async function test(name, files, inputs, outputs, toRecord, basedir) {
 			console.error({ f, ext });
 			exit(1);
 		} else {
-			// TODO: Check that inputs and outputs have the same length
-			// TODO: Allow non-arrays by transforming strings to arrays
-			// TODO: Change code in other places to expect arrays instead of strings to inputs/outputs
 			let success = true;
 
 			if (typeof EXT_TO_CMD[ext].pre === 'function') {
