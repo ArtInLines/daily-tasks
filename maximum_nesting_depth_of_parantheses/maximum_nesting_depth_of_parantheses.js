@@ -15,4 +15,5 @@ function maxDepth(s) {
 	return maxDepth;
 }
 
-module.exports = { maxDepth };
+const { argv } = require('process');
+console.log(maxDepth(argv[2] ?? ''));

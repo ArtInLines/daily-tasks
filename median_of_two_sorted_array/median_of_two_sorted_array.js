@@ -35,4 +35,5 @@ function merge(nums1, nums2) {
 	return nums2;
 }
 
-module.exports = { findMedianSortedArrays };
+const { argv } = require('process');
+console.log(findMedianSortedArrays(...JSON.parse(argv.slice(2).join(' '))));
