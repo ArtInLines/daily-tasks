@@ -1,3 +1,6 @@
+from sys import argv
+
+
 def fib(n, memo = {}):
 	if (n < 2):
 		return n
@@ -5,3 +8,5 @@ def fib(n, memo = {}):
 		return memo[n]
 	memo[n] = fib(n-2, memo) + fib(n-1,memo)
 	return memo[n]
+
+print(fib(int(argv[1])))

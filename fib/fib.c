@@ -1,24 +1,22 @@
 #include <stdio.h>
+#include <stdlib.h>
 
-unsigned int fibHelper(unsigned int n, unsigned int* memo) {
-    if (memo[n - 1]) return memo[n - 1];
-    memo[n - 1] = fibHelper(n - 1, memo) + fibHelper(n - 2, memo);
-    return memo[n - 1];
-    }
-
-unsigned int fib(unsigned int n) {
+unsigned int fib(unsigned int n)
+{
     if (n < 2) return n;
 
-    unsigned int* memo = malloc((n - 1) * sizeof(unsigned int));
-    unsigned int i; for (i = 2; i < n - 1; i++) memo[i] = 0;
-    memo[0] = 1; memo[1] = 1;
-    unsigned int res = fibHelper(n - 1, memo) + fibHelper(n - 2, memo);
-    free(memo);
+    unsigned int* table = malloc((n + 1) * sizeof(unsigned int));
+    table[0] = 0;
+    table[1] = 1;
+    unsigned int i; for (i = 2; i <= n; i++) table[i] = table[i-2] + table[i - 1];
+    unsigned int res = table[n];
+    free(table);
     return res;
-    }
+}
 
-void main() {
-    // Testing:
-    // int i;
-    // for (i = 1; i <= 20; i++) printf("Fib of %d = %d\n", i, fib(i));
-    }
+int main(int argc, char const *argv[])
+{
+	int res = fib(atoi(argv[1]));
+	printf("%d\n", res);
+	return 0;
+}
