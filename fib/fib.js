@@ -1,18 +1,11 @@
-// Bad Solution
-// function fib(n) {
-// 	if (fib <= 2) return 1;
-// 	return fib - 1 + fib(n - 2);
-// }
+const { argv } = require('process');
 
-// Better Solution
-function fib(n, memo = {}) {
-	if (n in memo) return memo[n];
-	if (n < 2) return n;
-	memo[n] = fib(n - 1, memo) + fib(n - 2, memo);
+function fib(n) {
+	const memo = [0, 1];
+	for (let i = 2; i <= n; i++) {
+		memo.push(memo.at(-2) + memo.at(-1));
+	}
 	return memo[n];
 }
 
-module.exports = { fib };
-
-// Testing
-// for (let i = 0; i <= 30; i++) console.log(`Fib of ${i} = ${fib(i)}`);
+console.log(fib(Number(argv[2])));

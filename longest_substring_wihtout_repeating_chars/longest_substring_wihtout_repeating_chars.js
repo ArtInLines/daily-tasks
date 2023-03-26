@@ -36,4 +36,5 @@ function slidingWindow(s) {
 	return maxLength;
 }
 
-module.exports = { lengthOfLongestSubstring, slidingWindow };
+const { argv } = require('process');
+console.log(lengthOfLongestSubstring(argv[2] ?? ''));

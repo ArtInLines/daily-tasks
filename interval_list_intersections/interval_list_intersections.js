@@ -34,4 +34,5 @@ function intervalIntersection(l1, l2) {
 	return res;
 }
 
-module.exports = { intervalIntersection };
+const { argv } = require('process');
+console.log(JSON.stringify(intervalIntersection(...JSON.parse(argv.slice(2).join(' ')))));

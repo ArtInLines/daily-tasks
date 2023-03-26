@@ -1,18 +1,18 @@
-package fib;
-
 public class Fib {
-	public static int fib(int n) {
-		Integer[] memo = new Integer[n];
-		return fib(n, memo);
+	public static Integer fib(int n) {
+		if (n < 2)
+			return n;
+		Integer[] table = new Integer[n + 1];
+		table[0] = 0;
+		table[1] = 1;
+		for (int i = 2; i <= n; i++) {
+			table[i] = table[i - 1] + table[i - 2];
+		}
+		return table[n];
 	}
 
-	private static Integer fib(Integer n, Integer[] memo) {
-		if (n <= 1)
-			return n;
-		if (memo[n - 1] == null) {
-			memo[n - 2] = fib(n - 2, memo);
-			memo[n - 1] = fib(n - 1, memo);
-		}
-		return memo[n - 1] + memo[n - 2];
+	public static void main(String[] args) {
+		Integer res = Fib.fib(Integer.parseInt(args[0]));
+		System.out.println(res);
 	}
 }

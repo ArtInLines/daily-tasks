@@ -15,4 +15,5 @@ function longestCommonPrefix(...strs) {
 	return res;
 }
 
-module.exports = { longestCommonPrefix };
+const { argv } = require('process');
+console.log(longestCommonPrefix(...argv.slice(2)));

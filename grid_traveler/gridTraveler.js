@@ -9,4 +9,5 @@ function gridTraveler(m, n, memo = {}) {
 	return memo[key];
 }
 
-module.exports = { gridTraveler };
+const { argv } = require('process');
+console.log(gridTraveler(Number(argv[2]), Number(argv[3])));
