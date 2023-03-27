@@ -109,7 +109,7 @@ function getFilesRecursively(basedir, basename, allLangs, langs, recdirs = [], f
 		)
 		.map((d) => d.name);
 	const b = dirents.filter((d) => d.isDirectory()).flatMap((d) => getFilesRecursively(basedir, basename, allLangs, langs, [...recdirs, d.name], foundLangs));
-	return [...a, ...b].map((x) => path.join(...recdirs, x));
+	return [...a.map((x) => path.join(...recdirs, x)), ...b];
 }
 
 // Return list of objects: [{name, inputs, outputs, files}]
@@ -119,7 +119,7 @@ function getProblemFiles(jsonpaths, langs, problems, allTests, allLangs) {
 		foundLangs[l] = false;
 	}
 
-	const files = [];
+	const tests = [];
 	jsonpaths.forEach((fd) => {
 		const json = JSON.parse(fs.readFileSync(fd, { encoding: 'utf-8' }));
 		const dir = path.dirname(fd);
@@ -151,7 +151,7 @@ function getProblemFiles(jsonpaths, langs, problems, allTests, allLangs) {
 					test.inputs.push(testcase.input);
 					test.outputs.push(testcase.output);
 				}
-				files.push(test);
+				tests.push(test);
 			}
 		}
 
@@ -164,7 +164,7 @@ function getProblemFiles(jsonpaths, langs, problems, allTests, allLangs) {
 			}
 		}
 	});
-	return files;
+	return tests;
 }
 
 async function runCommand(cmd, f, name, ext, input = null) {
