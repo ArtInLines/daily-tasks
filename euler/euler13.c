@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #define NUMS_AMOUNT 100
 #define DIGITS_AMOUNT 50
@@ -40,8 +41,10 @@ void add_bes_to_les(char* bes, char* les)
 	}
 }
 
-int main(void)
+int main(int argc, char** argv)
 {
+	int res_digit_amount = atoi(argv[1]);
+
 	// +1 for terminating NULL-Character
 	char nums[NUMS_AMOUNT][DIGITS_AMOUNT+1] = {
 		"37107287533902102798797998220837590246510135740250",
@@ -155,7 +158,9 @@ int main(void)
 	for (size_t i = 1; i < NUMS_AMOUNT; i++) add_bes_to_les(nums[i], sum);
 
 	char res[RES_LEN] = {0};
-	for (size_t i = 0; i < RES_LEN - 1; i++) res[i] = sum[RES_LEN - 2 - i];
+	size_t i = 0;
+	while (sum[RES_LEN - 2 - i] == '0') i++;
+	for (size_t j = 0; j < res_digit_amount && i + j < RES_LEN - 1; j++) res[j] = sum[RES_LEN - 2 - i - j];
 
 	// TODO: Remove beginning zeros from res
 	printf("%s\n", res);
