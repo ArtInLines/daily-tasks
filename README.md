@@ -61,3 +61,6 @@ node test --help
 -   Several solutions to the same problem could be tested in parralel
 -   Add better Error Handling to the Testing Framework
 -   Add ignored Folders, that aren't checked for solution-files
+-   As far as I can tell (without having tested it), the testing framework is not cross-platform and only works on windows currently.
+-   Error Messages are often not very helpful. It would be nice to see the stdout on error, instead of just the error message (which usually is just "Command failed: <cmd>")
+-   Showing Exit Code on Error doesn't work at the moment
