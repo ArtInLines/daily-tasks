@@ -29,4 +29,4 @@ function nthPrime(n::UInt)
 end
 
 n::UInt = 10001
-print(nthPrime(n))
+print(nthPrime(parse(UInt, ARGS[1])))

@@ -68,16 +68,16 @@ const EXT_TO_CMD = {
 	js: { run: (input, name) => `node ${name}.js ${input}` },
 	py: { run: (input, name) => `py ${name}.py ${input}` },
 	c: { pre: (name) => `gcc -o ${name} ${name}.c`, run: (input, name) => `${name} ${input}` },
-	rs: { pre: (name) => `rustc ${name}.rs -o ${name}`, run: (input, name) => `${name} ${input}` },
+	rs: { pre: (name) => `rustc ${name}.rs -o ${name}.exe`, run: (input, name) => `${name} ${input}` },
 	java: { pre: (name) => `javac ${name}.java`, run: (input, name) => `java ${name} ${input}` },
-	stlx: { run: (input, name) => `setlX ${name}.stlx ${input}` },
+	stlx: { run: (input, name) => `setlX ${name}.stlx --params ${input}` },
 	jl: { run: (input, name) => `julia ${name}.jl ${input}` },
 	lsp: { run: (input, name) => `sbcl --noinform --load ${name}.lsp --quit ${input}` },
 	rb: { run: (input, name) => `ruby ${name}.rb ${input}` },
-	kt: { pre: (name) => `kotlinc ${name}.kt -include-runtime -d ${name}.jar`, run: (input, name) => `java -jar ${name}.jar` },
+	kt: { pre: (name) => `kotlinc ${name}.kt -include-runtime -d ${name}.jar`, run: (input, name) => `java -jar ${name}.jar ${input}` },
 };
 
-const IGNORED_EXTS = ['exe', 'o', 'class', 'pyc'];
+const IGNORED_EXTS = ['exe', 'o', 'class', 'pyc', 'pdb', 'jar'];
 
 function getTestJsons(dir = __dirname) {
 	const res = [];
@@ -188,7 +188,7 @@ async function runCommand(cmd, f, name, ext, input = null) {
 	}
 }
 
-async function test(name, files, inputs, outputs, toRecord, basedir) {
+async function test(name, files, inputs, outputs, toRecord) {
 	if (toRecord) {
 		console.error("Recording hasn't been implemented yet");
 		exit(1);
@@ -310,7 +310,7 @@ async function main() {
 
 	let toTest = getProblemFiles(getTestJsons(__dirname), flags.langs, flags.problems, flags.allTests, flags.allLangs);
 	for await (const t of toTest) {
-		await test(t.name, t.files, t.inputs, t.outputs, flags.rec, __dirname);
+		await test(t.name, t.files, t.inputs, t.outputs, flags.rec);
 	}
 }
 

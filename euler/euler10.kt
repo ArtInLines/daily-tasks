@@ -43,9 +43,15 @@ fun mySum(s: Sequence<Int>): Long {
 	return sum;
 }
 
-fun main() {
-	val a: Long = mySum(primesBefore10());
-	println(a);
-	val b: Long = mySum(primesAfter10(2_000_000));
-	print(a + b);
+fun f(n: Int): Long {
+	if (n <= 10) return mySum(primesBefore10());
+	else {
+		val a: Long = mySum(primesBefore10());
+		val b: Long = mySum(primesAfter10(2_000_000));
+		return a + b
+	}
+}
+
+fun main(args: Array<String>) {
+	print(f(args[0].toInt()))
 }

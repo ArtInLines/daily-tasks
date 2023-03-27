@@ -29,9 +29,19 @@ impl Iterator for Fib {
     }
 }
 
+fn sum_filtered_fib(max: usize, div_by: usize) -> usize {
+    Fib::new(max)
+        .filter(|x| x % div_by == 0)
+        .fold(0, |acc, x| acc + x)
+}
+
+use std::env;
+use std::str::FromStr;
+
 fn main() {
-    let res = Fib::new(4_000_000)
-        .filter(|x| x % 2 == 0)
-        .fold(0, |acc, x| acc + x);
+    let args: Vec<String> = env::args().collect();
+    let args = &args[1..];
+    let args: Vec<usize> = args.iter().map(|x| usize::from_str(&x).unwrap()).collect();
+    let res = sum_filtered_fib(args[0], args[1]);
     println!("{}", res);
 }

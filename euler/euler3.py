@@ -21,4 +21,6 @@ def max_prime_factor(n):
 			i += 1
 	return i
 
-print(max_prime_factor(600851475143))
+from sys import argv
+
+print(max_prime_factor(int(argv[1])))

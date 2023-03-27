@@ -42,4 +42,4 @@ lcm := procedure(nums) {
 	return */ { a ** b : [a, b] in factors };
 };
 
-print(lcm([1..20]));
+print(lcm([int(params[1])..int(params[2])]));

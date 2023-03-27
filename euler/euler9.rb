@@ -10,5 +10,5 @@ def main(n)
 	return nil
 end
 
-triple = main(1000)
+triple = main(ARGV[0].to_i(10))
 print(triple[0] * triple[1] * triple[2]);

@@ -4,3 +4,5 @@ __pycache__/
 *.class
 *.o
 *.pyc
+*.pdb
+*.jar

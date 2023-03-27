@@ -13,10 +13,11 @@ unsigned int squareSum(unsigned int n)
 	return sum * sum;
 }
 
-int main(void)
+int main(int argc, char const *argv[])
 {
-	unsigned int a = sumSquares(100);
-	unsigned int b = squareSum(100);
+	unsigned int n = (unsigned int) atoi(argv[1]);
+	unsigned int a = sumSquares(n);
+	unsigned int b = squareSum(n);
 	printf("%d\n", b - a);
 	return 0;
 }

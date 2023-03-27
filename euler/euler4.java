@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class e4 {
+public class euler4 {
 	public static boolean isPalindrome(int n) {
 		List<Integer> digits = new ArrayList<>(7);
 		do {
@@ -33,7 +33,7 @@ public class e4 {
 	}
 
 	public static void main(String[] args) {
-		int res = e4.f(999);
+		int res = euler4.f(Integer.parseInt(args[0]) - 1);
 		System.out.println(res);
 	}
 }
