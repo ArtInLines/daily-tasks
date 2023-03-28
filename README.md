@@ -58,9 +58,10 @@ node test --help
     -   Idea 1: Allow any name by having the file in a directory with the problem's name. This would be supported by the current project structure
     -   Idea 2: Allow the following naming scheme: `<problem>(.<any name here>)*.<extension>`
 -   The testing framework should allow some simple way of adding more testcases via the command-line
--   Several solutions to the same problem could be tested in parralel
+-   Several solutions to the same problem should be tested in parralel
 -   Add better Error Handling to the Testing Framework
 -   Add ignored Folders, that aren't checked for solution-files
 -   As far as I can tell (without having tested it), the testing framework is not cross-platform and only works on windows currently.
--   Error Messages are often not very helpful. It would be nice to see the stdout on error, instead of just the error message (which usually is just "Command failed: <cmd>")
--   Showing Exit Code on Error doesn't work at the moment
+-   Think about adding different time-limits for compilation commands & running the actual program
+-   Think about allowing custom time-limits per language
+-   Log times for compiling/runnning the programs (first step in benchmarking)

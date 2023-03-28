@@ -8,6 +8,10 @@ const exec = util.promisify(child_process.exec);
 
 // TODO: Add ignored Folders
 
+// The kotlin compiler takes up to 8 seconds even for simple programs
+// Since kotlin programs should still be accepted, the time-limit for commands is currently set at 8s
+const TIME_LIMIT_PER_CMD = 8000; // in ms
+
 const COLORS = {
 	Reset: '\x1b[0m',
 	Bright: '\x1b[1m',
@@ -38,18 +42,27 @@ const COLORS = {
 	BgGray: '\x1b[100m',
 };
 
-const indentStr = (str, indents = 0, indentSize = 2) => {
+// Additional Offset exists because the color codes take up a character too and newlines aren't on the same column if they aren't offset by the same amount
+const indentStr = (str, indents = 0, indentSize = 2, additionalOffset = 1) => {
 	let indentStr = '';
 	for (let i = 0; i < indents * indentSize; i++) indentStr += ' ';
-	return indentStr + str.split('\n').join('\n' + indentStr);
+	let offsetStr = '';
+	for (let i = 0; i < additionalOffset; i++) offsetStr += ' ';
+	return (
+		indentStr +
+		str
+			.split('\n')
+			.map((x, i) => (i > 0 ? offsetStr + x : x))
+			.join('\n' + indentStr)
+	);
 };
 
 const info = (str, n = 0, reset = true) => console.log(COLORS.Reset, indentStr('[INFO]: ' + str, n));
-const succ = (str, n = 0) => console.log(COLORS.Reset, COLORS.FgGreen, indentStr('[SUCCESS]: ' + str, n), COLORS.Reset);
-const warn = (str, n = 0) => console.log(COLORS.Reset, COLORS.FgYellow, indentStr('[WARN]: ' + str, n), COLORS.Reset);
-const warnInfo = (str, n = 0) => console.log(COLORS.Reset, COLORS.FgYellow, indentStr(str, n), COLORS.Reset);
-const fail = (str, n = 0) => console.log(COLORS.Reset, COLORS.FgRed, indentStr('[ERROR]: ' + str, n), COLORS.Reset);
-const failInfo = (str, n = 0) => console.log(COLORS.Reset, COLORS.FgRed, indentStr(str, n), COLORS.Reset);
+const succ = (str, n = 0) => console.log(COLORS.FgGreen, indentStr('[SUCCESS]: ' + str, n), COLORS.Reset);
+const warn = (str, n = 0) => console.log(COLORS.FgYellow, indentStr('[WARN]: ' + str, n), COLORS.Reset);
+const warnInfo = (str, n = 0) => console.log(COLORS.FgYellow, indentStr(str, n), COLORS.Reset);
+const fail = (str, n = 0) => console.log(COLORS.FgRed, indentStr('[ERROR]: ' + str, n), COLORS.Reset);
+const failInfo = (str, n = 0) => console.log(COLORS.FgRed, indentStr(str, n), COLORS.Reset);
 
 // TODO: Rename "Problems" to tasks or something like that?
 
@@ -168,11 +181,8 @@ function getProblemFiles(jsonpaths, langs, problems, allTests, allLangs) {
 }
 
 async function runCommand(cmd, f, name, ext, input = null) {
-	try {
-		// info("Running Command '" + cmd + "'");
-		let res = await exec(cmd, { cwd: path.dirname(f) });
-		return res;
-	} catch (error) {
+	// info("Running Command '" + cmd + "'");
+	return exec(cmd, { cwd: path.dirname(f), signal: AbortSignal.timeout(TIME_LIMIT_PER_CMD) }).catch((reason) => {
 		fail(`${name}.${ext} failed.`, 0);
 		failInfo(`Command:`, 1);
 		failInfo(`${cmd}`, 2);
@@ -180,12 +190,23 @@ async function runCommand(cmd, f, name, ext, input = null) {
 			failInfo(`Input:`, 1);
 			failInfo(`${input}`, 2);
 		}
-		failInfo(`Error Code:`, 1);
-		failInfo(`${error.status ?? 'Unknown'}`, 2);
-		failInfo(`Error Message:`, 1);
-		failInfo(`${error.message}`, 2);
+		if (reason.name === 'AbortError') {
+			failInfo(`Reason:`, 1);
+			failInfo(`Command took more than ${TIME_LIMIT_PER_CMD}ms.`, 2);
+		} else {
+			failInfo(`Error Code:`, 1);
+			failInfo(`${reason.code ?? 'Unknown'}`, 2);
+		}
+		if (reason.stdout) {
+			failInfo(`Stdout:`, 1);
+			failInfo(`${reason.stdout}`, 2);
+		}
+		if (reason.stderr) {
+			failInfo(`Stderr:`, 1);
+			failInfo(`${reason.stderr}`, 2);
+		}
 		return null;
-	}
+	});
 }
 
 async function test(name, files, inputs, outputs, toRecord) {
