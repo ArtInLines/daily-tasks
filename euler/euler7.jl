@@ -28,5 +28,4 @@ function nthPrime(n::UInt)
     end
 end
 
-n::UInt = 10001
 print(nthPrime(parse(UInt, ARGS[1])))
