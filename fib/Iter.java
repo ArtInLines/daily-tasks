@@ -1,4 +1,4 @@
-public class Fib {
+public class Iter {
 	public static Integer fib(int n) {
 		if (n < 2)
 			return n;
@@ -12,7 +12,7 @@ public class Fib {
 	}
 
 	public static void main(String[] args) {
-		Integer res = Fib.fib(Integer.parseInt(args[0]));
+		Integer res = Iter.fib(Integer.parseInt(args[0]));
 		System.out.println(res);
 	}
 }
