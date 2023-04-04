@@ -54,9 +54,6 @@ node test --help
 ## TODOs
 
 -   Add Benchmarking to the testing framework
--   There is currently no way to have to different solutions to the same problem in one language, because the filename has to match the problem name exactly. Fix this
-    -   Idea 1: Allow any name by having the file in a directory with the problem's name. This would be supported by the current project structure
-    -   Idea 2: Allow the following naming scheme: `<problem>(.<any name here>)*.<extension>`
 -   The testing framework should allow some simple way of adding more testcases via the command-line
 -   Several solutions to the same problem should be tested in parralel
 -   Add better Error Handling to the Testing Framework

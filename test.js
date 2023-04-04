@@ -57,7 +57,7 @@ const indentStr = (str, indents = 0, indentSize = 2, additionalOffset = 1) => {
 	);
 };
 
-const info = (str, n = 0, reset = true) => console.log(COLORS.Reset, indentStr('[INFO]: ' + str, n));
+const info = (str, n = 0, reset = true) => console.log(reset ? COLORS.Reset : '', indentStr('[INFO]: ' + str, n));
 const succ = (str, n = 0) => console.log(COLORS.FgGreen, indentStr('[SUCCESS]: ' + str, n), COLORS.Reset);
 const warn = (str, n = 0) => console.log(COLORS.FgYellow, indentStr('[WARN]: ' + str, n), COLORS.Reset);
 const warnInfo = (str, n = 0) => console.log(COLORS.FgYellow, indentStr(str, n), COLORS.Reset);
@@ -90,7 +90,7 @@ const EXT_TO_CMD = {
 	kt: { pre: (name) => `kotlinc ${name}.kt -include-runtime -d ${name}.jar`, run: (input, name) => `java -jar ${name}.jar ${input}` },
 };
 
-const IGNORED_EXTS = ['exe', 'o', 'class', 'pyc', 'pdb', 'jar'];
+const IGNORED_EXTS = ['exe', 'o', 'class', 'pyc', 'pdb', 'jar', 'md'];
 
 function getTestJsons(dir = __dirname) {
 	const res = [];
@@ -106,12 +106,12 @@ function getTestJsons(dir = __dirname) {
 
 function getFilesRecursively(basedir, basename, allLangs, langs, recdirs = [], foundLangs = []) {
 	basename = basename.toLowerCase();
+	const currentDirName = recdirs.length === 0 ? basedir : recdirs.at(-1);
 	const dirents = fs.readdirSync(path.join(basedir, ...recdirs), { withFileTypes: true });
 	const a = dirents
 		.filter(
 			(d) =>
-				d.isFile() &&
-				d.name.toLowerCase().startsWith(basename + '.') &&
+				((d.isFile() && currentDirName.toLowerCase() === basename) || d.name.toLowerCase().startsWith(basename + '.')) &&
 				(allLangs ||
 					langs.find((l) => {
 						if (d.name.endsWith(l)) {
@@ -183,7 +183,7 @@ function getProblemFiles(jsonpaths, langs, problems, allTests, allLangs) {
 async function runCommand(cmd, f, name, ext, input = null) {
 	// info("Running Command '" + cmd + "'");
 	return exec(cmd, { cwd: path.dirname(f), signal: AbortSignal.timeout(TIME_LIMIT_PER_CMD) }).catch((reason) => {
-		fail(`${name}.${ext} failed.`, 0);
+		fail(`${path.basename(f)} failed.`, 0);
 		failInfo(`Command:`, 1);
 		failInfo(`${cmd}`, 2);
 		if (input !== null) {
@@ -235,7 +235,7 @@ async function test(name, files, inputs, outputs, toRecord) {
 			let success = true;
 
 			if (typeof EXT_TO_CMD[ext].pre === 'function') {
-				if ((await runCommand(EXT_TO_CMD[ext].pre(name), f, name, ext)) === null) {
+				if ((await runCommand(EXT_TO_CMD[ext].pre(fname), f, name, ext)) === null) {
 					success = false;
 				}
 			}
@@ -250,7 +250,7 @@ async function test(name, files, inputs, outputs, toRecord) {
 				if (res) {
 					if (output.trim() !== res.stdout.trim()) {
 						success = false;
-						fail(`${name}.${ext} didn't produce the expected output:`);
+						fail(`${path.basename(f)} didn't produce the expected output:`);
 						failInfo('Input:', 1);
 						failInfo(`${input}`, 2);
 						failInfo(`Expected:`, 1);
@@ -264,7 +264,7 @@ async function test(name, files, inputs, outputs, toRecord) {
 			}
 
 			if (success) {
-				succ(`${name}.${ext} ran successfully`);
+				succ(`${path.basename(f)} ran successfully`);
 			}
 		}
 	}
