@@ -63,6 +63,14 @@ const warn = (str, n = 0) => console.log(COLORS.FgYellow, indentStr('[WARN]: ' +
 const warnInfo = (str, n = 0) => console.log(COLORS.FgYellow, indentStr(str, n), COLORS.Reset);
 const fail = (str, n = 0) => console.log(COLORS.FgRed, indentStr('[ERROR]: ' + str, n), COLORS.Reset);
 const failInfo = (str, n = 0) => console.log(COLORS.FgRed, indentStr(str, n), COLORS.Reset);
+const debug = (str, n = 0) => console.log(COLORS.FgBlue, indentStr('[DEBUG]: ' + str, n), COLORS.Reset);
+const debugInfo = (str, n = 0) => console.log(COLORS.FgBlue, indentStr(str, n), COLORS.Reset);
+
+const failExit = (code = 1) => {
+	console.log('\n');
+	console.log(COLORS.FgRed, 'Exitted with code ' + code, COLORS.Reset);
+	exit(code);
+};
 
 // TODO: Rename "Problems" to tasks or something like that?
 
@@ -73,7 +81,9 @@ Options:
     -l=<Languages>   Set the list of languages that should be tested. The list of languages should be comma-separated.
                      For now, the languages are identified by the extensions only.
                      Providing an empty list means to test all languages.
-    -r    --record   Record the outputs of all tests that are run as the new expected output.
+    -d=<Directories> Set the list of Directories to look for TestJsons. Only relative paths are accepted at the moment.
+					 Providing an empty list means to use all TestJsons in the working directory and subdirectories below.
+	-r    --record   Record the outputs of all tests that are run as the new expected output.
                      Not supported yet.
     -h    --help     Show this Help text. Any options and problems provided will be ignored.`;
 
@@ -90,7 +100,7 @@ const EXT_TO_CMD = {
 	kt: { pre: (name) => `kotlinc ${name}.kt -include-runtime -d ${name}.jar`, run: (input, name) => `java -jar ${name}.jar ${input}` },
 };
 
-const IGNORED_EXTS = ['exe', 'o', 'class', 'pyc', 'pdb', 'jar', 'md'];
+const IGNORED_EXTS = ['exe', 'o', 'class', 'pyc', 'pdb', 'jar'];
 
 function getTestJsons(dir = __dirname) {
 	const res = [];
@@ -158,8 +168,8 @@ function getProblemFiles(jsonpaths, langs, problems, allTests, allLangs) {
 				if (!Array.isArray(testcases)) testcases = [testcases];
 				for (const testcase of testcases) {
 					if (typeof testcase.input !== 'string' || typeof testcase.output !== 'string') {
-						console.error('Input or output of testcase are expected to be strings. Instead received `' + JSON.stringify(testcase) + '` as testcase.');
-						exit(1);
+						fail('Input or output of testcase are expected to be strings. Instead received `' + JSON.stringify(testcase) + '` as testcase.');
+						failExit(1);
 					}
 					test.inputs.push(testcase.input);
 					test.outputs.push(testcase.output);
@@ -211,13 +221,13 @@ async function runCommand(cmd, f, name, ext, input = null) {
 
 async function test(name, files, inputs, outputs, toRecord) {
 	if (toRecord) {
-		console.error("Recording hasn't been implemented yet");
-		exit(1);
+		fail("Recording hasn't been implemented yet");
+		failExit(1);
 	}
 
 	if (files.length === 0) {
-		console.error('There should always be files provided to test. Something went wrong.');
-		exit(1);
+		fail('There should always be files provided to test. Something went wrong.');
+		failExit(1);
 	}
 
 	info(`Testing "${name}"`);
@@ -228,9 +238,9 @@ async function test(name, files, inputs, outputs, toRecord) {
 		if (EXT_TO_CMD[ext] === undefined) {
 			if (IGNORED_EXTS.includes(ext)) continue;
 			// TODO: Error Handling
-			console.error("Error Handling for Testing isn't implemented yet");
-			console.error({ f, ext });
-			exit(1);
+			debug("Error Handling for Testing isn't implemented yet");
+			debugInfo(JSON.stringify({ f, ext }, null, 2), 1);
+			failExit(1);
 		} else {
 			let success = true;
 
@@ -270,17 +280,39 @@ async function test(name, files, inputs, outputs, toRecord) {
 	}
 }
 
+function parseArgWithVal(i, args, name) {
+	let a = args[i].split('=');
+	if (a.length == 1) {
+		if (i + 1 == args.length) {
+			fail(`The command line option "${name}" requires arguments to be given after an "=".\nSee "-help" for more information on how to use the option correctly.`);
+			failExit(1);
+		}
+		let next = args[++i];
+		if (next.startsWith('-')) {
+			fail(`The command line option "${name}" requires arguments to be given after an "=".\nSee "-help" for more information on how to use the option correctly.`);
+			failExit(1);
+		}
+		if (next == '=') {
+			if (i + 1 == args.length) {
+				fail(`The command line option "${name}" requires arguments to be given after an "=".\nSee "-help" for more information on how to use the option correctly.`);
+				failExit(1);
+			}
+			next = args[++i];
+		} else if (next.startsWith('=')) next = next.slice(1);
+		return { i, res: next.split(',') };
+	} else {
+		return { i, res: a[1].split(',') };
+	}
+}
+
 async function main() {
 	const args = process.argv.slice(2);
-	if (args.length === 0) {
-		console.log(HELP_TEXT);
-		exit(1);
-	}
 	const flags = {
 		allTests: false,
 		allLangs: false,
 		problems: [],
 		langs: [],
+		dirs: [],
 		rec: false,
 		help: false,
 	};
@@ -289,29 +321,14 @@ async function main() {
 		if (arg == 'all') flags.allTests = true;
 		else if (arg == '-h' || arg == '--help') flags.help = true;
 		else if (arg == '-r' || arg == '--record') flags.rec = true;
-		else if (arg.startsWith('-l')) {
-			let a = arg.split('=');
-			if (a.length == 1) {
-				if (i + 1 == args.length) {
-					console.error(`The command line option "-l" requires arguments to be given after an "=".\nSee "-help" for more information on how to use the option correctly.`);
-					exit(1);
-				}
-				let next = args[++i];
-				if (next.startsWith('-')) {
-					console.error(`The command line option "-l" requires arguments to be given after an "=".\nSee "-help" for more information on how to use the option correctly.`);
-					exit(1);
-				}
-				if (next == '=') {
-					if (i + 1 == args.length) {
-						console.error(`The command line option "-l" requires arguments to be given after an "=".\nSee "-help" for more information on how to use the option correctly.`);
-						exit(1);
-					}
-					next = args[++i];
-				} else if (next.startsWith('=')) next = next.slice(1);
-				flags.langs = next.split(',');
-			} else {
-				flags.langs = a[1].split(',');
-			}
+		else if (arg.startsWith('-d')) {
+			let o = parseArgWithVal(i, args, '-d');
+			flags.dirs = o.res;
+			i = o.i;
+		} else if (arg.startsWith('-l')) {
+			let o = parseArgWithVal(i, args, '-l');
+			flags.langs = o.res;
+			i = o.i;
 		} else {
 			flags.problems.push(arg);
 		}
@@ -323,13 +340,20 @@ async function main() {
 	}
 
 	flags.problems = flags.problems.map((p) => p.toLowerCase());
+	if (flags.problems.length === 0 && !flags.allTests) {
+		warn('No Problems were provided, so all will be executed. This behavior might change in the future');
+		flags.allTests = true;
+	}
 	flags.langs = flags.langs.map((l) => {
 		if (l.startsWith('.')) l = l.slice(1);
 		return l.toLowerCase();
 	});
 	if (flags.langs.length === 0) flags.allLangs = true;
+	if (flags.dirs.length === 0) flags.dirs = ['./'];
 
-	let toTest = getProblemFiles(getTestJsons(__dirname), flags.langs, flags.problems, flags.allTests, flags.allLangs);
+	let jsons = flags.dirs.flatMap((d) => getTestJsons(path.join(__dirname, d)));
+	// console.log({ flags });
+	let toTest = getProblemFiles(jsons, flags.langs, flags.problems, flags.allTests, flags.allLangs);
 	for await (const t of toTest) {
 		await test(t.name, t.files, t.inputs, t.outputs, flags.rec);
 	}
