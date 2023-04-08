@@ -100,7 +100,7 @@ const EXT_TO_CMD = {
 	kt: { pre: (name) => `kotlinc ${name}.kt -include-runtime -d ${name}.jar`, run: (input, name) => `java -jar ${name}.jar ${input}` },
 };
 
-const IGNORED_EXTS = ['exe', 'o', 'class', 'pyc', 'pdb', 'jar'];
+const IGNORED_EXTS = ['exe', 'o', 'class', 'pyc', 'pdb', 'jar', 'md'];
 
 function getTestJsons(dir = __dirname) {
 	const res = [];
@@ -178,15 +178,16 @@ function getProblemFiles(jsonpaths, langs, problems, allTests, allLangs) {
 			}
 		}
 
-		for (const p of problems) {
-			warn(`No testcases were found for "${p}".`);
-		}
 		for (const l in foundLangs) {
 			if (!foundLangs[l]) {
 				warn(`No file for the language "${l}" was found.`);
 			}
 		}
 	});
+	for (const p of problems) {
+		warn(`No testcases were found for "${p}".`);
+	}
+
 	return tests;
 }
 
