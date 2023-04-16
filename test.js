@@ -6,7 +6,9 @@ const child_process = require('child_process');
 const { exit } = require('process');
 const exec = util.promisify(child_process.exec);
 
-// TODO: Add ignored Folders
+// TODO: Actually ignore the ignored Folders
+
+const CONFIG = JSON.parse(fs.readFileSync('./config.json', { encoding: 'utf-8' }));
 
 // The kotlin compiler takes up to 8 seconds even for simple programs
 // Since kotlin programs should still be accepted, the time-limit for commands is currently set at 8s
@@ -40,6 +42,10 @@ const COLORS = {
 	BgCyan: '\x1b[46m',
 	BgWhite: '\x1b[47m',
 	BgGray: '\x1b[100m',
+};
+
+const makeTask = (name, files, ignoreWhitespace = false) => {
+	return { name, inputs: [], outputs: [], files, ignoreWhitespace };
 };
 
 // Additional Offset exists because the color codes take up a character too and newlines aren't on the same column if they aren't offset by the same amount
@@ -87,20 +93,28 @@ Options:
                      Not supported yet.
     -h    --help     Show this Help text. Any options and problems provided will be ignored.`;
 
-const EXT_TO_CMD = {
-	js: { run: (input, name) => `node ${name}.js ${input}` },
-	py: { run: (input, name) => `py ${name}.py ${input}` },
-	c: { pre: (name) => `gcc -o ${name} ${name}.c`, run: (input, name) => `${name} ${input}` },
-	rs: { pre: (name) => `rustc ${name}.rs -o ${name}.exe`, run: (input, name) => `${name} ${input}` },
-	java: { pre: (name) => `javac ${name}.java`, run: (input, name) => `java ${name} ${input}` },
-	stlx: { run: (input, name) => `setlX ${name}.stlx --params ${input}` },
-	jl: { run: (input, name) => `julia ${name}.jl ${input}` },
-	lsp: { run: (input, name) => `sbcl --noinform --load ${name}.lsp --quit ${input}` },
-	rb: { run: (input, name) => `ruby ${name}.rb ${input}` },
-	kt: { pre: (name) => `kotlinc ${name}.kt -include-runtime -d ${name}.jar`, run: (input, name) => `java -jar ${name}.jar ${input}` },
+const parseCMDStr = (s, vars = {}) => {
+	let res = '';
+	let idx = 0;
+	while (idx < s.length) {
+		if (s[idx] !== '<') {
+			res += s[idx];
+		} else {
+			idx++;
+			let varname = '';
+			while (idx < s.length && s[idx] != '>') {
+				varname += s[idx];
+				idx++;
+			}
+			if (s[idx] != '>') throw Error("Unclosed variable in cmd-string: '" + s + "'");
+			if (vars[varname] === undefined) throw Error("Unknown variable '" + varname + "' in cmd-string: '" + s + "'");
+			console.assert(typeof vars[varname] === 'string', 'We assume that all variables map to strings');
+			res += vars[varname];
+		}
+		idx++;
+	}
+	return res;
 };
-
-const IGNORED_EXTS = ['exe', 'o', 'class', 'pyc', 'pdb', 'jar', 'md'];
 
 function getTestJsons(dir = __dirname) {
 	const res = [];
@@ -162,19 +176,19 @@ function getProblemFiles(jsonpaths, langs, problems, allTests, allLangs) {
 					continue;
 				}
 
-				const test = { name: key, inputs: [], outputs: [], files: testFiles };
+				let taskJson = json[key];
+				if (Array.isArray(taskJson)) taskJson = { testcases: taskJson };
+				const task = makeTask(key, testFiles, taskJson.ignoreWhitespace || false);
 
-				let testcases = json[key];
-				if (!Array.isArray(testcases)) testcases = [testcases];
-				for (const testcase of testcases) {
+				for (const testcase of taskJson.testcases) {
 					if (typeof testcase.input !== 'string' || typeof testcase.output !== 'string') {
 						fail('Input or output of testcase are expected to be strings. Instead received `' + JSON.stringify(testcase) + '` as testcase.');
 						failExit(1);
 					}
-					test.inputs.push(testcase.input);
-					test.outputs.push(testcase.output);
+					task.inputs.push(testcase.input);
+					task.outputs.push(testcase.output);
 				}
-				tests.push(test);
+				tests.push(task);
 			}
 		}
 
@@ -220,24 +234,26 @@ async function runCommand(cmd, f, name, ext, input = null) {
 	});
 }
 
-async function test(name, files, inputs, outputs, toRecord) {
+async function test(task, toRecord) {
+	// console.log({ task });
+
 	if (toRecord) {
 		fail("Recording hasn't been implemented yet");
 		failExit(1);
 	}
 
-	if (files.length === 0) {
+	if (task.files.length === 0) {
 		fail('There should always be files provided to test. Something went wrong.');
 		failExit(1);
 	}
 
-	info(`Testing "${name}"`);
+	info(`Testing "${task.name}"`);
 	// console.log({ name, files, inputs, outputs, toRecord });
-	for await (const f of files) {
+	for await (const f of task.files) {
 		let ext = path.extname(f).slice(1);
 		let fname = path.basename(f).slice(0, -ext.length - 1);
-		if (EXT_TO_CMD[ext] === undefined) {
-			if (IGNORED_EXTS.includes(ext)) continue;
+		if (CONFIG.extToCmd[ext] === undefined) {
+			if (CONFIG.ignoredExts.includes(ext)) continue;
 			// TODO: Error Handling
 			debug("Error Handling for Testing isn't implemented yet");
 			debugInfo(JSON.stringify({ f, ext }, null, 2), 1);
@@ -245,29 +261,39 @@ async function test(name, files, inputs, outputs, toRecord) {
 		} else {
 			let success = true;
 
-			if (typeof EXT_TO_CMD[ext].pre === 'function') {
-				if ((await runCommand(EXT_TO_CMD[ext].pre(fname), f, name, ext)) === null) {
-					success = false;
-				}
+			if (!Array.isArray(CONFIG.extToCmd[ext])) CONFIG.extToCmd[ext] = [CONFIG.extToCmd[ext]];
+
+			for (let i = 0; i < CONFIG.extToCmd[ext].length - 1; i++) {
+				const cmdTemplate = CONFIG.extToCmd[ext][i];
+				const cmd = parseCMDStr(cmdTemplate, { name: fname });
+				const cmdRes = await runCommand(cmd, f, task.name, ext);
+				if (cmdRes === null) success = false;
 			}
 
-			for (let i = 0; success && i < inputs.length; i++) {
-				const input = inputs[i];
-				const output = outputs[i];
+			for (let i = 0; success && i < task.inputs.length; i++) {
+				let input = task.inputs[i];
+				let output = task.outputs[i];
 
-				let cmd = EXT_TO_CMD[ext].run(input, fname);
+				let cmd = parseCMDStr(CONFIG.extToCmd[ext].at(-1), { name: fname, input });
 
-				let res = await runCommand(cmd, f, name, ext, input);
+				let res = await runCommand(cmd, f, task.name, ext, input);
 				if (res) {
-					if (output.trim() !== res.stdout.trim()) {
+					output = output.trim();
+					let stdout = res.stdout.trim();
+					if (task.ignoreWhitespace) {
+						output = output.split(/\s+/).join(' ');
+						stdout = stdout.split(/\s+/).join(' ');
+					}
+
+					if (output !== stdout) {
 						success = false;
 						fail(`${path.basename(f)} didn't produce the expected output:`);
 						failInfo('Input:', 1);
-						failInfo(`${input}`, 2);
+						failInfo(input, 2);
 						failInfo(`Expected:`, 1);
 						failInfo(output, 2);
 						failInfo(`Received:`, 1);
-						failInfo(res.stdout, 2);
+						failInfo(stdout, 2);
 					}
 				} else {
 					success = false;
@@ -356,7 +382,7 @@ async function main() {
 	// console.log({ flags });
 	let toTest = getProblemFiles(jsons, flags.langs, flags.problems, flags.allTests, flags.allLangs);
 	for await (const t of toTest) {
-		await test(t.name, t.files, t.inputs, t.outputs, flags.rec);
+		await test(t, flags.rec);
 	}
 }
 

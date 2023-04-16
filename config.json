@@ -1,0 +1,16 @@
+{
+	"ignoredFolders": [".git"],
+	"ignoredExts": ["exe", "o", "class", "pyc", "pdb", "jar", "md"],
+	"extToCmd": {
+		"js": "node <name>.js <input>",
+		"py": "py <name>.py <input>",
+		"c": ["gcc -o <name> <name>.c", "<name> <input>"],
+		"rs": ["rustc -o <name>.exe <name>.rs", "<name> <input>"],
+		"java": ["javac <name>.java", "java <name> <input>"],
+		"stlx": "setlX <name>.stlx -p <input>",
+		"jl": "julia <name>.jl <input>",
+		"lsp": "sbcl --noinform --load <name>.lsp --quit <input>",
+		"rb": "ruby <name>.rb <input>",
+		"kt": ["kotlinc <name>.kt -include-runtime -d <name>.jar", "java -jar <name>.jar <input>"]
+	}
+}
