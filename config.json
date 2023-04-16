@@ -12,5 +12,22 @@
 		"lsp": "sbcl --noinform --load <name>.lsp --quit <input>",
 		"rb": "ruby <name>.rb <input>",
 		"kt": ["kotlinc <name>.kt -include-runtime -d <name>.jar", "java -jar <name>.jar <input>"]
+	},
+	"optimizedCmd": {
+		"c": {
+			"O1": ["gcc -o <name> <name>.c -O1", "<name> <input>"],
+			"O2": ["gcc -o <name> <name>.c -O2", "<name> <input>"],
+			"O3": ["gcc -o <name> <name>.c -O3", "<name> <input>"]
+		},
+		"rs": {
+			"O1": ["rustc -o <name>.exe <name>.rs -C opt-level=1", "<name> <input>"],
+			"O2": ["rustc -o <name>.exe <name>.rs -C opt-level=2", "<name> <input>"],
+			"O3": ["rustc -o <name>.exe <name>.rs -C opt-level=3", "<name> <input>"]
+		},
+		"jl": {
+			"O1": "julia -O1 <name>.jl <input>",
+			"O2": "julia -O2 <name>.jl <input>",
+			"O3": "julia -O3 <name>.jl <input>"
+		}
 	}
 }

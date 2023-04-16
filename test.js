@@ -6,8 +6,6 @@ const child_process = require('child_process');
 const { exit } = require('process');
 const exec = util.promisify(child_process.exec);
 
-// TODO: Actually ignore the ignored Folders
-
 const CONFIG = JSON.parse(fs.readFileSync('./config.json', { encoding: 'utf-8' }));
 
 // The kotlin compiler takes up to 8 seconds even for simple programs
@@ -121,7 +119,7 @@ function getTestJsons(dir = __dirname) {
 	fs.readdirSync(dir, { withFileTypes: true }).forEach((dirent) => {
 		if (dirent.isFile() && dirent.name == 'tests.json') {
 			res.push(path.join(dir, dirent.name));
-		} else if (dirent.isDirectory()) {
+		} else if (dirent.isDirectory() && !CONFIG.ignoredFolders.includes(dirent.name)) {
 			res.push(...getTestJsons(path.join(dir, dirent.name)));
 		}
 	});
@@ -135,7 +133,8 @@ function getFilesRecursively(basedir, basename, allLangs, langs, recdirs = [], f
 	const a = dirents
 		.filter(
 			(d) =>
-				((d.isFile() && currentDirName.toLowerCase() === basename) || d.name.toLowerCase().startsWith(basename + '.')) &&
+				d.isFile() &&
+				(currentDirName.toLowerCase() === basename || d.name.toLowerCase().startsWith(basename + '.')) &&
 				(allLangs ||
 					langs.find((l) => {
 						if (d.name.endsWith(l)) {
@@ -145,7 +144,9 @@ function getFilesRecursively(basedir, basename, allLangs, langs, recdirs = [], f
 					}))
 		)
 		.map((d) => d.name);
-	const b = dirents.filter((d) => d.isDirectory()).flatMap((d) => getFilesRecursively(basedir, basename, allLangs, langs, [...recdirs, d.name], foundLangs));
+	const b = dirents
+		.filter((d) => d.isDirectory() && !CONFIG.ignoredFolders.includes(d.name))
+		.flatMap((d) => getFilesRecursively(basedir, basename, allLangs, langs, [...recdirs, d.name], foundLangs));
 	return [...a.map((x) => path.join(...recdirs, x)), ...b];
 }
 
