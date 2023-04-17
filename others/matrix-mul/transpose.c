@@ -62,7 +62,7 @@ int main(int argc, char const *argv[])
 	int limit = atoi(argv[2]);
 	int n = atoi(argv[3]);
 	int silent = 0;
-	if (argc >= 7 && argv[4][0] == 's') silent = 1;
+	if (argc >= 5 && argv[4][0] == 's') silent = 1;
 
 	int* a = malloc(n * n * sizeof(int));
 	randMatrix(a, n, n, limit);
