@@ -16,7 +16,7 @@ long long fib(long long n)
 
 int main(int argc, char const *argv[])
 {
-	int res = fib(atoi(argv[1]));
+	int res = fib(atoll(argv[1]));
 	printf("%d\n", res);
 	return 0;
 }

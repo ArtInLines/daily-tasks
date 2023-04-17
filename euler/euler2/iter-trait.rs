@@ -21,10 +21,10 @@ impl Iterator for Fib {
         let tmp = self.curr;
         self.curr = self.curr + self.prev;
         self.prev = tmp;
-        if self.curr > self.max {
+        if self.prev > self.max {
             None
         } else {
-            Some(self.curr)
+            Some(self.prev)
         }
     }
 }
