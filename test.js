@@ -345,7 +345,6 @@ async function test(task, toRecord, toBench, versions) {
 					const cmd = parseCMDStr(cmdTemplate, { name: fname });
 					const cmdRes = await runCommand(cmd, f, null, compTimeLimit);
 					if (cmdRes === null) success = false;
-					else preTimes.push(cmdRes.time);
 				}
 
 				for (let i = 0; success && i < task.inputs.length; i++) {
