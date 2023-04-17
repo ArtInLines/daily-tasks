@@ -236,10 +236,12 @@ function getProblemFiles(jsonpaths, langs, problems, allTests, allLangs) {
 	return tests;
 }
 
-async function runCommand(cmd, f, input = null, timelimit = DEFAULT_TIME_LIMIT) {
+async function runCommand(cmd, f, input = null, timelimit = DEFAULT_TIME_LIMIT, silent = false) {
 	let start = Date.now();
 	// debug(`Running command: ${cmd}`);
 	let res = await exec(cmd, { cwd: path.dirname(f), signal: AbortSignal.timeout(timelimit) }).catch((reason) => {
+		if (silent) return null;
+
 		fail(`${path.basename(f)} failed.`, 0);
 		failInfo(`Command:`, 1);
 		failInfo(`${cmd}`, 2);
@@ -303,6 +305,7 @@ async function test(task, toRecord, toBench, versions) {
 					let success = true;
 					let preTimes = [];
 					let runTimes = [];
+					let failedInput = null;
 
 					for (let i = 0; success && i < cmdStrs.length - 1; i++) {
 						const cmd = parseCMDStr(cmdStrs[i], { name: fname });
@@ -314,21 +317,24 @@ async function test(task, toRecord, toBench, versions) {
 					for (let i = 0; success && i < task.benchInputs.length; i++) {
 						const input = task.benchInputs[i];
 						const cmd = parseCMDStr(cmdStrs.at(-1), { name: fname, input });
-						const cmdRes = await runCommand(cmd, f, input, BENCHMARK_TIME_LIMIT);
-						if (cmdRes === null) success = false;
-						else runTimes.push(cmdRes.time);
+						const cmdRes = await runCommand(cmd, f, input, BENCHMARK_TIME_LIMIT, true);
+						if (cmdRes === null) {
+							success = false;
+							failedInput = input;
+						} else runTimes.push(cmdRes.time);
 					}
 
+					let name = `${fname}${v === 'none' ? '' : '-' + v}.${ext}`;
 					if (success) {
-						let name = `${fname}${v === 'none' ? '' : '-' + v}.${ext}`;
 						info(`Benchmark results for ${name}:`, 1);
 						if (preTimes.length > 0) info(`Compilation Time: ${preTimes.reduce((p, c) => p + c, 0)}ms`, 2);
 						info(`Fastest Runtime: ${Math.min(...runTimes)}ms`, 2);
 						info(`Slowest Runtime: ${Math.max(...runTimes)}ms`, 2);
 						info(`Average Runtime: ${round(avg(...runTimes), 2)}ms`, 2);
 					} else {
-						fail(`Cannot benchmark failed programs.`);
-						failExit(1);
+						fail(`${name} timed out (took more than ${BENCHMARK_TIME_LIMIT}ms)`, 1);
+						failInfo(`Input:`, 2);
+						failInfo(failedInput, 3);
 					}
 				}
 			} else {

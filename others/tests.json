@@ -1,18 +1,21 @@
 {
-	"fib": [
-		{ "input": "0", "output": "0" },
-		{ "input": "1", "output": "1" },
-		{ "input": "2", "output": "1" },
-		{ "input": "6", "output": "8" },
-		{ "input": "8", "output": "21" },
-		{ "input": "10", "output": "55" },
-		{ "input": "14", "output": "377" },
-		{ "input": "18", "output": "2584" },
-		{ "input": "25", "output": "75025" },
-		{ "input": "29", "output": "514229" },
-		{ "input": "30", "output": "832040" },
-		{ "input": "34", "output": "5702887" }
-	],
+	"fib": {
+		"testcases": [
+			{ "input": "0", "output": "0" },
+			{ "input": "1", "output": "1" },
+			{ "input": "2", "output": "1" },
+			{ "input": "6", "output": "8" },
+			{ "input": "8", "output": "21" },
+			{ "input": "10", "output": "55" },
+			{ "input": "14", "output": "377" },
+			{ "input": "18", "output": "2584" },
+			{ "input": "25", "output": "75025" },
+			{ "input": "29", "output": "514229" },
+			{ "input": "30", "output": "832040" },
+			{ "input": "34", "output": "5702887" }
+		],
+		"bench": ["15", "30", "35", "40", "50"]
+	},
 	"gini": [
 		{ "input": "0.005 0.005 0.005 0.005 0.005 0.195 0.195 0.195 0.195 0.195", "output": "0.247" },
 		{ "input": "0.055 0.055 0.055 0.055 0.055 0.055 0.055 0.055 0.055 0.505", "output": "0.221" }
