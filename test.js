@@ -10,7 +10,12 @@ const CONFIG = JSON.parse(fs.readFileSync('./config.json', { encoding: 'utf-8' }
 
 // The kotlin compiler takes up to 8 seconds even for simple programs
 // Since kotlin programs should still be accepted, the time-limit for commands is currently set at 8s
-const TIME_LIMIT_PER_CMD = 8000; // in ms
+const DEFAULT_TIME_LIMIT = 2000; // in ms
+const BENCHMARK_TIME_LIMIT = 15000; // in ms
+const SPECIAL_COMP_TIME_LIMITS = { kt: 10000 };
+const SPECIAL_RUN_TIME_LIMITS = {};
+
+// TODO: Rename "Problems" to tasks or something like that?
 
 const COLORS = {
 	Reset: '\x1b[0m',
@@ -43,7 +48,7 @@ const COLORS = {
 };
 
 const makeTask = (name, files, ignoreWhitespace = false) => {
-	return { name, inputs: [], outputs: [], files, ignoreWhitespace };
+	return { name, inputs: [], outputs: [], files, ignoreWhitespace, benchInputs: [] };
 };
 
 // Additional Offset exists because the color codes take up a character too and newlines aren't on the same column if they aren't offset by the same amount
@@ -72,24 +77,46 @@ const debugInfo = (str, n = 0) => console.log(COLORS.FgBlue, indentStr(str, n), 
 
 const failExit = (code = 1) => {
 	console.log('\n');
-	console.log(COLORS.FgRed, 'Exitted with code ' + code, COLORS.Reset);
+	console.log(COLORS.FgRed, 'Exited with code ' + code, COLORS.Reset);
 	exit(code);
 };
 
-// TODO: Rename "Problems" to tasks or something like that?
+const avg = (...values) => values.reduce((p, c) => p + c, 0) / values.length;
+const round = (x, dec) => Math.round(x * 10 ** dec) / 10 ** dec;
 
 const HELP_TEXT = `Usage: "node test [Options] <Problems>
     <Problems> is a space-separated list of problems to test. Each Problem should be the name of the problem.
     The special name "all" will test all problems.
 Options:
-    -l=<Languages>   Set the list of languages that should be tested. The list of languages should be comma-separated.
-                     For now, the languages are identified by the extensions only.
-                     Providing an empty list means to test all languages.
-    -d=<Directories> Set the list of Directories to look for TestJsons. Only relative paths are accepted at the moment.
-					 Providing an empty list means to use all TestJsons in the working directory and subdirectories below.
-	-r    --record   Record the outputs of all tests that are run as the new expected output.
-                     Not supported yet.
-    -h    --help     Show this Help text. Any options and problems provided will be ignored.`;
+    -l=<Languages>    Set the list of languages that should be tested. The list of languages should be comma-separated.
+                      For now, the languages are identified by the extensions only.
+                      Providing an empty list means to test all languages.
+    -d=<Directories>  Set the list of Directories to look for TestJsons. Only relative paths are accepted at the moment.
+					  Providing an empty list means to use all TestJsons in the working directory and subdirectories below.
+	-b=<versions>     Benchmark the tests, that are run. The provided 'version' defines which (if any) optimizations strategies should
+					  be benchmarked. The different possible versions for each language can be seen (and changed) in 'config.json'.
+					  The common versions are 'none' (meaning no optimization), 'O1', 'O2' and 'O3'. 'all' benchmarks all version.
+					  If no version is provided, 'none' will be selected by default.
+					  Remember that not all languages offer optimizations in the first place.
+	-r    --record    Record the outputs of all tests that are run as the new expected output.
+                      Not supported yet.
+    -h    --help      Show this Help text. Any options and problems provided will be ignored.`;
+
+const getExtVersions = (ext, versions) => {
+	return versions
+		.map((v) => {
+			if (v === 'none') return [CONFIG.extToCmd[ext], v];
+			else if (CONFIG.optimizedCmd[ext] !== undefined) {
+				if (CONFIG.optimizedCmd[ext][v] !== undefined) return [CONFIG.optimizedCmd[ext][v], v];
+				else return null;
+			} else return null;
+		})
+		.filter((x) => x !== null)
+		.map((x) => {
+			if (!Array.isArray(x[0])) return [[x[0]], x[1]];
+			else return x;
+		});
+};
 
 const parseCMDStr = (s, vars = {}) => {
 	let res = '';
@@ -189,6 +216,9 @@ function getProblemFiles(jsonpaths, langs, problems, allTests, allLangs) {
 					task.inputs.push(testcase.input);
 					task.outputs.push(testcase.output);
 				}
+				if (taskJson.bench !== undefined) task.benchInputs = taskJson.bench;
+				else task.benchInputs = task.inputs;
+
 				tests.push(task);
 			}
 		}
@@ -206,9 +236,10 @@ function getProblemFiles(jsonpaths, langs, problems, allTests, allLangs) {
 	return tests;
 }
 
-async function runCommand(cmd, f, name, ext, input = null) {
-	// info("Running Command '" + cmd + "'");
-	return exec(cmd, { cwd: path.dirname(f), signal: AbortSignal.timeout(TIME_LIMIT_PER_CMD) }).catch((reason) => {
+async function runCommand(cmd, f, input = null, timelimit = DEFAULT_TIME_LIMIT) {
+	let start = Date.now();
+	// debug(`Running command: ${cmd}`);
+	let res = await exec(cmd, { cwd: path.dirname(f), signal: AbortSignal.timeout(timelimit) }).catch((reason) => {
 		fail(`${path.basename(f)} failed.`, 0);
 		failInfo(`Command:`, 1);
 		failInfo(`${cmd}`, 2);
@@ -218,7 +249,7 @@ async function runCommand(cmd, f, name, ext, input = null) {
 		}
 		if (reason.name === 'AbortError') {
 			failInfo(`Reason:`, 1);
-			failInfo(`Command took more than ${TIME_LIMIT_PER_CMD}ms.`, 2);
+			failInfo(`Command took more than ${timelimit}ms.`, 2);
 		} else {
 			failInfo(`Error Code:`, 1);
 			failInfo(`${reason.code ?? 'Unknown'}`, 2);
@@ -233,9 +264,11 @@ async function runCommand(cmd, f, name, ext, input = null) {
 		}
 		return null;
 	});
+	let end = Date.now();
+	return res === null ? null : { out: res.stdout, err: res.stderr, time: end - start };
 }
 
-async function test(task, toRecord) {
+async function test(task, toRecord, toBench, versions) {
 	// console.log({ task });
 
 	if (toRecord) {
@@ -253,6 +286,9 @@ async function test(task, toRecord) {
 	for await (const f of task.files) {
 		let ext = path.extname(f).slice(1);
 		let fname = path.basename(f).slice(0, -ext.length - 1);
+
+		let compTimeLimit = SPECIAL_COMP_TIME_LIMITS[ext] ?? DEFAULT_TIME_LIMIT;
+
 		if (CONFIG.extToCmd[ext] === undefined) {
 			if (CONFIG.ignoredExts.includes(ext)) continue;
 			// TODO: Error Handling
@@ -260,57 +296,100 @@ async function test(task, toRecord) {
 			debugInfo(JSON.stringify({ f, ext }, null, 2), 1);
 			failExit(1);
 		} else {
-			let success = true;
-
 			if (!Array.isArray(CONFIG.extToCmd[ext])) CONFIG.extToCmd[ext] = [CONFIG.extToCmd[ext]];
 
-			for (let i = 0; i < CONFIG.extToCmd[ext].length - 1; i++) {
-				const cmdTemplate = CONFIG.extToCmd[ext][i];
-				const cmd = parseCMDStr(cmdTemplate, { name: fname });
-				const cmdRes = await runCommand(cmd, f, task.name, ext);
-				if (cmdRes === null) success = false;
-			}
+			if (toBench) {
+				for (const [cmdStrs, v] of getExtVersions(ext, versions)) {
+					let success = true;
+					let preTimes = [];
+					let runTimes = [];
 
-			for (let i = 0; success && i < task.inputs.length; i++) {
-				let input = task.inputs[i];
-				let output = task.outputs[i];
-
-				let cmd = parseCMDStr(CONFIG.extToCmd[ext].at(-1), { name: fname, input });
-
-				let res = await runCommand(cmd, f, task.name, ext, input);
-				if (res) {
-					output = output.trim();
-					let stdout = res.stdout.trim();
-					if (task.ignoreWhitespace) {
-						output = output.split(/\s+/).join(' ');
-						stdout = stdout.split(/\s+/).join(' ');
+					for (let i = 0; success && i < cmdStrs.length - 1; i++) {
+						const cmd = parseCMDStr(cmdStrs[i], { name: fname });
+						const cmdRes = await runCommand(cmd, f, null, compTimeLimit);
+						if (cmdRes === null) success = false;
+						else preTimes.push(cmdRes.time);
 					}
 
-					if (output !== stdout) {
-						success = false;
-						fail(`${path.basename(f)} didn't produce the expected output:`);
-						failInfo('Input:', 1);
-						failInfo(input, 2);
-						failInfo(`Expected:`, 1);
-						failInfo(output, 2);
-						failInfo(`Received:`, 1);
-						failInfo(stdout, 2);
+					for (let i = 0; success && i < task.benchInputs.length; i++) {
+						const input = task.benchInputs[i];
+						const cmd = parseCMDStr(cmdStrs.at(-1), { name: fname, input });
+						const cmdRes = await runCommand(cmd, f, input, BENCHMARK_TIME_LIMIT);
+						if (cmdRes === null) success = false;
+						else runTimes.push(cmdRes.time);
 					}
-				} else {
-					success = false;
+
+					if (success) {
+						let name = `${fname}${v === 'none' ? '' : '-' + v}.${ext}`;
+						info(`Benchmark results for ${name}:`, 1);
+						if (preTimes.length > 0) info(`Compilation Time: ${preTimes.reduce((p, c) => p + c, 0)}ms`, 2);
+						info(`Fastest Runtime: ${Math.min(...runTimes)}ms`, 2);
+						info(`Slowest Runtime: ${Math.max(...runTimes)}ms`, 2);
+						info(`Average Runtime: ${round(avg(...runTimes), 2)}ms`, 2);
+					} else {
+						fail(`Cannot benchmark failed programs.`);
+						failExit(1);
+					}
 				}
-			}
+			} else {
+				let success = true;
 
-			if (success) {
-				succ(`${path.basename(f)} ran successfully`);
+				for (let i = 0; success && i < CONFIG.extToCmd[ext].length - 1; i++) {
+					const cmdTemplate = CONFIG.extToCmd[ext][i];
+					const cmd = parseCMDStr(cmdTemplate, { name: fname });
+					const cmdRes = await runCommand(cmd, f, null, compTimeLimit);
+					if (cmdRes === null) success = false;
+					else preTimes.push(cmdRes.time);
+				}
+
+				for (let i = 0; success && i < task.inputs.length; i++) {
+					let input = task.inputs[i];
+					let output = task.outputs[i];
+
+					let cmd = parseCMDStr(CONFIG.extToCmd[ext].at(-1), { name: fname, input });
+
+					let res = await runCommand(cmd, f, input);
+					if (res) {
+						output = output.trim();
+						let stdout = res.out.trim();
+						if (task.ignoreWhitespace) {
+							output = output.split(/\s+/).join(' ');
+							stdout = stdout.split(/\s+/).join(' ');
+						}
+
+						if (output !== stdout) {
+							success = false;
+							fail(`${path.basename(f)} didn't produce the expected output:`);
+							failInfo('Input:', 1);
+							failInfo(input, 2);
+							failInfo(`Expected:`, 1);
+							failInfo(output, 2);
+							failInfo(`Received:`, 1);
+							failInfo(stdout, 2);
+						}
+					} else {
+						success = false;
+					}
+				}
+
+				if (success) {
+					succ(`${path.basename(f)} ran successfully`);
+				}
 			}
 		}
 	}
 }
 
-function parseArgWithVal(i, args, name) {
+function parseArgWithVal(i, args, name, required = true) {
 	let a = args[i].split('=');
 	if (a.length == 1) {
+		if (!args[i].endsWith('=')) {
+			if (required) {
+				fail(`The command line option "${name}" requires a value to be provided.\nSee "-help" for more information on how to use the option correctly.`);
+				failExit(1);
+			} else return { i, res: [] };
+		}
+
 		if (i + 1 == args.length) {
 			fail(`The command line option "${name}" requires arguments to be given after an "=".\nSee "-help" for more information on how to use the option correctly.`);
 			failExit(1);
@@ -341,6 +420,7 @@ async function main() {
 		problems: [],
 		langs: [],
 		dirs: [],
+		bench: null,
 		rec: false,
 		help: false,
 	};
@@ -356,6 +436,10 @@ async function main() {
 		} else if (arg.startsWith('-l')) {
 			let o = parseArgWithVal(i, args, '-l');
 			flags.langs = o.res;
+			i = o.i;
+		} else if (arg.startsWith('-b')) {
+			let o = parseArgWithVal(i, args, '-b', false);
+			flags.bench = o.res.length == 0 ? ['none'] : o.res;
 			i = o.i;
 		} else {
 			flags.problems.push(arg);
@@ -383,7 +467,7 @@ async function main() {
 	// console.log({ flags });
 	let toTest = getProblemFiles(jsons, flags.langs, flags.problems, flags.allTests, flags.allLangs);
 	for await (const t of toTest) {
-		await test(t, flags.rec);
+		await test(t, flags.rec, flags.bench !== null, flags.bench || ['none']);
 	}
 }
 

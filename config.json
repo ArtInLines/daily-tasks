@@ -15,14 +15,14 @@
 	},
 	"optimizedCmd": {
 		"c": {
-			"O1": ["gcc -o <name> <name>.c -O1", "<name> <input>"],
-			"O2": ["gcc -o <name> <name>.c -O2", "<name> <input>"],
-			"O3": ["gcc -o <name> <name>.c -O3", "<name> <input>"]
+			"O1": ["gcc -o <name>-O1 <name>.c -O1", "<name>-O1 <input>"],
+			"O2": ["gcc -o <name>-O2 <name>.c -O2", "<name>-O2 <input>"],
+			"O3": ["gcc -o <name>-O3 <name>.c -O3", "<name>-O3 <input>"]
 		},
 		"rs": {
-			"O1": ["rustc -o <name>.exe <name>.rs -C opt-level=1", "<name> <input>"],
-			"O2": ["rustc -o <name>.exe <name>.rs -C opt-level=2", "<name> <input>"],
-			"O3": ["rustc -o <name>.exe <name>.rs -C opt-level=3", "<name> <input>"]
+			"O1": ["rustc -o <name>-O1.exe <name>.rs -C opt-level=1", "<name>-O1 <input>"],
+			"O2": ["rustc -o <name>-O2.exe <name>.rs -C opt-level=2", "<name>-O2 <input>"],
+			"O3": ["rustc -o <name>-O3.exe <name>.rs -C opt-level=3", "<name>-O3 <input>"]
 		},
 		"jl": {
 			"O1": "julia -O1 <name>.jl <input>",
