@@ -1,3 +1,5 @@
+const { argv } = require('process');
+
 const RtI = {
 	I: 1,
 	V: 5,
@@ -21,4 +23,4 @@ function romanToInt(s) {
 	return x;
 }
 
-module.exports = { romanToInt };
+console.log(romanToInt(argv[2]));

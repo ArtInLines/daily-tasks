@@ -18,3 +18,7 @@ def roman_to_int(s: str) -> int:
 		else:
 			x += RtI[s[i]]
 	return x
+
+from sys import argv
+
+print(roman_to_int(argv[1]))
