@@ -52,5 +52,16 @@
 		{ "input": "CDLXXXVIII", "output": "488" },
 		{ "input": "CMII", "output": "902" },
 		{ "input": "MMMMMDCLXIV", "output": "5664" }
+	],
+	"int_to_roman": [
+		{ "input": "1", "output": "I" },
+		{ "input": "4", "output": "IV" },
+		{ "input": "13", "output": "XIII" },
+		{ "input": "19", "output": "XIX" },
+		{ "input": "144", "output": "CXLIV" },
+		{ "input": "379", "output": "CCCLXXIX" },
+		{ "input": "488", "output": "CDLXXXVIII" },
+		{ "input": "902", "output": "CMII" },
+		{ "input": "5664", "output": "MMMMMDCLXIV" }
 	]
 }
