@@ -20,6 +20,7 @@ The following is a list of all the programming languages used in this repo. The 
 | [Common Lisp](https://lisp-lang.org/)[^cldoc][^clcom]                         | `.lsp`    | `sbcl --noinform --load <name> --quit <input>`                                        |
 | [Ruby](https://www.ruby-lang.org/en/)                                         | `.rb`     | `ruby <name> <input>`                                                                 |
 | [Kotlin](https://kotlinlang.org/)[^kotlincom]                                 | `.kt`     | `kotlinc <name> -include-runtime -d <outname>.jar && java -jar <outname>.jar <input>` |
+| [Haskell](https://www.haskell.org/)                                           | `.hs`     | `ghc <name> && <name> <input>`                                                        |
 
 [^cbooks]: For books on C, see the PDF-Files [here](https://github.com/ArtInLines/PDF-Files/tree/master/CS/Programming/Languages/C).
 [^ccom]: There are many compilers for C. I personally use [Clang](https://clang.llvm.org/) or [GCC](https://gcc.gnu.org/)
