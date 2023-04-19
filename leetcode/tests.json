@@ -63,5 +63,17 @@
 		{ "input": "488", "output": "CDLXXXVIII" },
 		{ "input": "902", "output": "CMII" },
 		{ "input": "5664", "output": "MMMMMDCLXIV" }
-	]
+	],
+	"valid_parans": {
+		"testcases": [
+			{ "input": "", "output": "t" },
+			{ "input": "([[]})", "output": "f" },
+			{ "input": "(){[])}", "output": "f" },
+			{ "input": "()[(){[]}]", "output": "t" },
+			{ "input": "[[({})]", "output": "f" },
+			{ "input": "[[({})]({}[])][{{()}}]", "output": "t" },
+			{ "input": "{([)]}", "output": "f" }
+		],
+		"bench": ["[[({})]({}[])][{{()}}]", "[[({})]({}[])](((({[{(())}]}))))[{{([)]}}]", "()[(){[]}][[([{}])]((()))({}[])][{{()}}]{[]}"]
+	}
 }

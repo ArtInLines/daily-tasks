@@ -284,7 +284,6 @@ async function test(task, toRecord, toBench, versions) {
 	}
 
 	info(`Testing "${task.name}"`);
-	// console.log({ name, files, inputs, outputs, toRecord });
 	for await (const f of task.files) {
 		let ext = path.extname(f).slice(1);
 		let fname = path.basename(f).slice(0, -ext.length - 1);
