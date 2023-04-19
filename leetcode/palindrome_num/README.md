@@ -12,7 +12,7 @@ An integer is a **palindrome** when it reads the same backward as forward.
 
 ## Constraints:
 
--   `-231 <= x <= 231 - 1`
+-   `-2147483648 <= x <= 2147483648 - 1`
 
 ## Solutions
 
