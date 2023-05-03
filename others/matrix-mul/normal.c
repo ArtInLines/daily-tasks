@@ -32,7 +32,7 @@ void printMatrix(int* matrix, int rows, int cols) {
 	{
 		for (int j = 0; j < cols; j++)
 		{
-			printf("%ld ", matrix[i * cols + j]);
+			printf("%d ", matrix[i * cols + j]);
 		}
 		printf("\n");
 	}
