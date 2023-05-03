@@ -327,9 +327,9 @@ async function test(task, toRecord, toBench, versions) {
 					if (success) {
 						info(`Benchmark results for ${name}:`, 1);
 						if (preTimes.length > 0) info(`Compilation Time: ${preTimes.reduce((p, c) => p + c, 0)}ms`, 2);
-						info(`Fastest Runtime: ${Math.min(...runTimes)}ms`, 2);
-						info(`Slowest Runtime: ${Math.max(...runTimes)}ms`, 2);
-						info(`Average Runtime: ${round(avg(...runTimes), 2)}ms`, 2);
+						info(`Fastest Runtime:  ${Math.min(...runTimes)}ms`, 2);
+						info(`Slowest Runtime:  ${Math.max(...runTimes)}ms`, 2);
+						info(`Average Runtime:  ${round(avg(...runTimes), 2)}ms`, 2);
 					} else {
 						fail(`${name} timed out (took more than ${BENCHMARK_TIME_LIMIT}ms)`, 1);
 						failInfo(`Input:`, 2);
