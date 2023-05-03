@@ -11,7 +11,7 @@ const CONFIG = JSON.parse(fs.readFileSync('./config.json', { encoding: 'utf-8' }
 // The kotlin compiler takes up to 8 seconds even for simple programs
 // Since kotlin programs should still be accepted, the time-limit for commands is currently set at 8s
 const DEFAULT_TIME_LIMIT = 4000; // in ms
-const BENCHMARK_TIME_LIMIT = 15000; // in ms
+const BENCHMARK_TIME_LIMIT = 15 * 1000; // in ms
 const SPECIAL_COMP_TIME_LIMITS = { kt: 10000 };
 const SPECIAL_RUN_TIME_LIMITS = {};
 
@@ -283,7 +283,7 @@ async function test(task, toRecord, toBench, versions) {
 		failExit(1);
 	}
 
-	info(`Testing "${task.name}"`);
+	info(`Task: "${task.name}"`);
 	for await (const f of task.files) {
 		let ext = path.extname(f).slice(1);
 		let fname = path.basename(f).slice(0, -ext.length - 1);
