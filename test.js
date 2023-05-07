@@ -238,8 +238,8 @@ function getProblemFiles(jsonpaths, langs, problems, allTests, allLangs) {
 
 async function runCommand(cmd, f, input = null, timelimit = DEFAULT_TIME_LIMIT, silent = false) {
 	let start = Date.now();
-	// debug(`Running command: ${cmd}`);
-	let res = await exec(cmd, { cwd: path.dirname(f), signal: AbortSignal.timeout(timelimit) }).catch((reason) => {
+	if (silent) cmd = cmd + ' >nul 2>nul';
+	let res = await exec(cmd, { cwd: path.dirname(f), signal: AbortSignal.timeout(timelimit), windowsHide: true }).catch((reason) => {
 		if (silent) return null;
 
 		fail(`${path.basename(f)} failed.`, 0);
