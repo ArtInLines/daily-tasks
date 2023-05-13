@@ -103,19 +103,25 @@ Options:
     -h    --help      Show this Help text. Any options and problems provided will be ignored.`;
 
 const getExtVersions = (ext, versions) => {
-	return versions
+	const res = versions
 		.map((v) => {
-			if (v === 'none') return [CONFIG.extToCmd[ext], v];
-			else if (CONFIG.optimizedCmd[ext] !== undefined) {
-				if (CONFIG.optimizedCmd[ext][v] !== undefined) return [CONFIG.optimizedCmd[ext][v], v];
+			if (v === 'none') return [[v, CONFIG.extToCmd[ext]]];
+			else if (v === 'all') {
+				if (CONFIG.optimizedCmd[ext] === undefined) return [[CONFIG.extToCmd[ext], v]];
+				else return [['none', CONFIG.extToCmd[ext]], ...Object.entries(CONFIG.optimizedCmd[ext])];
+			} else if (CONFIG.optimizedCmd[ext] !== undefined) {
+				if (CONFIG.optimizedCmd[ext][v] !== undefined) return [[v, CONFIG.optimizedCmd[ext][v]]];
 				else return null;
 			} else return null;
 		})
 		.filter((x) => x !== null)
+		.flat(1)
 		.map((x) => {
-			if (!Array.isArray(x[0])) return [[x[0]], x[1]];
+			// Box even single commands into arrays to provide uniform data schema
+			if (!Array.isArray(x[1])) return [x[0], [x[1]]];
 			else return x;
 		});
+	return res;
 };
 
 const parseCMDStr = (s, vars = {}) => {
@@ -292,7 +298,7 @@ async function test(task, toRecord, toBench, versions) {
 			if (!Array.isArray(CONFIG.extToCmd[ext])) CONFIG.extToCmd[ext] = [CONFIG.extToCmd[ext]];
 
 			if (toBench) {
-				for (const [cmdStrs, v] of getExtVersions(ext, versions)) {
+				for (const [v, cmdStrs] of getExtVersions(ext, versions)) {
 					let success = true;
 					let preTimes = [];
 					let runTimes = [];
