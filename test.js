@@ -153,7 +153,7 @@ function getTestJsons(dir = __dirname) {
 	return res;
 }
 
-function getFilesRecursively(basedir, basename, allLangs, langs, recdirs = [], foundLangs = []) {
+function getFilesRecursively(basedir, basename, allLangs, langs, recdirs = []) {
 	basename = basename.toLowerCase();
 	const currentDirName = recdirs.length === 0 ? basedir : recdirs.at(-1);
 	const dirents = fs.readdirSync(path.join(basedir, ...recdirs), { withFileTypes: true });
@@ -164,26 +164,17 @@ function getFilesRecursively(basedir, basename, allLangs, langs, recdirs = [], f
 				(currentDirName.toLowerCase() === basename || d.name.toLowerCase().startsWith(basename + '.')) &&
 				(allLangs ||
 					langs.find((l) => {
-						if (d.name.endsWith(l)) {
-							foundLangs[l] = true;
-							return true;
-						} else return false;
+						if (d.name.endsWith(l)) return true;
+						else return false;
 					}))
 		)
 		.map((d) => d.name);
-	const b = dirents
-		.filter((d) => d.isDirectory() && !CONFIG.ignoredFolders.includes(d.name))
-		.flatMap((d) => getFilesRecursively(basedir, basename, allLangs, langs, [...recdirs, d.name], foundLangs));
+	const b = dirents.filter((d) => d.isDirectory() && !CONFIG.ignoredFolders.includes(d.name)).flatMap((d) => getFilesRecursively(basedir, basename, allLangs, langs, [...recdirs, d.name]));
 	return [...a.map((x) => path.join(...recdirs, x)), ...b];
 }
 
 // Return list of objects: [{name, inputs, outputs, files}]
 function getProblemFiles(jsonpaths, langs, problems, allTests, allLangs) {
-	const foundLangs = {};
-	for (const l of langs) {
-		foundLangs[l] = false;
-	}
-
 	const tests = [];
 	jsonpaths.forEach((fd) => {
 		const json = JSON.parse(fs.readFileSync(fd, { encoding: 'utf-8' }));
@@ -193,13 +184,13 @@ function getProblemFiles(jsonpaths, langs, problems, allTests, allLangs) {
 			const idx = problems.findIndex((p) => p == k);
 			if (allTests || idx >= 0) {
 				problems.pop(idx);
-				const testFiles = getFilesRecursively(dir, key, allLangs, langs, [], foundLangs).map((f) => path.join(dir, f));
+				const testFiles = getFilesRecursively(dir, key, allLangs, langs, []).map((f) => path.join(dir, f));
 
 				if (testFiles.length === 0) {
 					if (allLangs) {
 						warn(`No files with the name "${key}" could be found.`);
 					} else {
-						warn(`No ${langs.join(',')} file with the name "${key}" could be found.`);
+						warn(`No ${langs.join(',')} files with the name "${key}" could be found.`);
 					}
 					continue;
 				}
@@ -222,13 +213,14 @@ function getProblemFiles(jsonpaths, langs, problems, allTests, allLangs) {
 				tests.push(task);
 			}
 		}
-
-		for (const l in foundLangs) {
-			if (!foundLangs[l]) {
-				warn(`No file for the language "${l}" was found.`);
+	});
+	if (!allLangs) {
+		for (const l of langs) {
+			if (tests.findIndex((task) => task.files.findIndex((fname) => fname.endsWith('.' + l)) >= 0) < 0) {
+				warn(`No ${l} file was found.`);
 			}
 		}
-	});
+	}
 	for (const p of problems) {
 		warn(`No testcases were found for "${p}".`);
 	}
