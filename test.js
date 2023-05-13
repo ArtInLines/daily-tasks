@@ -92,13 +92,13 @@ Options:
                       For now, the languages are identified by the extensions only.
                       Providing an empty list means to test all languages.
     -d=<Directories>  Set the list of Directories to look for TestJsons. Only relative paths are accepted at the moment.
-					  Providing an empty list means to use all TestJsons in the working directory and subdirectories below.
-	-b=<versions>     Benchmark the tests, that are run. The provided 'version' defines which (if any) optimizations strategies should
-					  be benchmarked. The different possible versions for each language can be seen (and changed) in 'config.json'.
-					  The common versions are 'none' (meaning no optimization), 'O1', 'O2' and 'O3'. 'all' benchmarks all version.
-					  If no version is provided, 'none' will be selected by default.
-					  Remember that not all languages offer optimizations in the first place.
-	-r    --record    Record the outputs of all tests that are run as the new expected output.
+                      Providing an empty list means to use all TestJsons in the working directory and subdirectories below.
+    -b=<versions>     Benchmark the tests, that are run. The provided 'version' defines which (if any) optimizations strategies should
+                      be benchmarked. The different possible versions for each language can be seen (and changed) in 'config.json'.
+                      The common versions are 'none' (meaning no optimization), 'O1', 'O2' and 'O3'. 'all' benchmarks all version.
+                      If no version is provided, 'none' will be selected by default.
+                      Remember that not all languages offer optimizations in the first place.
+    -r    --record    Record the outputs of all tests that are run as the new expected output.
                       Not supported yet.
     -h    --help      Show this Help text. Any options and problems provided will be ignored.`;
 
