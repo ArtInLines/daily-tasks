@@ -54,12 +54,8 @@ node test --help
 
 ## TODOs
 
--   Add Benchmarking to the testing framework
-    -   Log times for compiling/runnning the programs (first step in benchmarking)
-    -   Benchmark different optimization levels when applicable
+-   Better output/statistics for benchmarks
 -   The testing framework should allow some simple way of adding more testcases via the command-line
 -   Several solutions to the same problem should be tested in parralel
 -   Add better Error Handling to the Testing Framework
 -   As far as I can tell (without having tested it), the testing framework is not cross-platform and only works on windows currently.
--   Think about adding different time-limits for compilation commands & running the actual program
--   Think about allowing custom time-limits per language
