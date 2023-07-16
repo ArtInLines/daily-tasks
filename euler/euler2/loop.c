@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 long long sum_filtered_fib(long long max, long long div_by) {
     long long res = 0;
     long long last = 0;
