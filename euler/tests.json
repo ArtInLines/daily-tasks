@@ -1,37 +1,97 @@
 {
 	"euler1": [
-		{ "input": "1000 3 5", "output": "233168" },
-		{ "input": "10 3 5", "output": "23" },
-		{ "input": "100 7", "output": "735" },
-		{ "input": "1000 2 7 23 9", "output": "317834" },
-		{ "input": "500 2 4 8 16", "output": "62250" }
+		{
+			"input": "1000 3 5",
+			"output": "233168"
+		},
+		{
+			"input": "10 3 5",
+			"output": "23"
+		},
+		{
+			"input": "100 7",
+			"output": "735"
+		},
+		{
+			"input": "1000 2 7 23 9",
+			"output": "317834"
+		},
+		{
+			"input": "500 2 4 8 16",
+			"output": "62250"
+		}
 	],
 	"euler2": [
-		{ "input": "4000000 2", "output": "4613732" },
-		{ "input": "100000 5", "output": "82460" },
-		{ "input": "500000 1", "output": "832039" },
-		{ "input": "1000000 1", "output": "2178308" },
-		{ "input": "4000000 17", "output": "199036" }
+		{
+			"input": "4000000 2",
+			"output": "4613732"
+		},
+		{
+			"input": "100000 5",
+			"output": "82460"
+		},
+		{
+			"input": "500000 1",
+			"output": "832039"
+		},
+		{
+			"input": "1000000 1",
+			"output": "2178308"
+		},
+		{
+			"input": "4000000 17",
+			"output": "199036"
+		}
 	],
 	"euler3": [
-		{ "input": "13195", "output": "29" },
-		{ "input": "600851475143 ", "output": "6857" }
+		{
+			"input": "13195",
+			"output": "29"
+		},
+		{
+			"input": "600851475143 ",
+			"output": "6857"
+		}
 	],
 	"euler4": [
-		{ "input": "100", "output": "9009" },
-		{ "input": "1000", "output": "906609" }
+		{
+			"input": "100",
+			"output": "9009"
+		},
+		{
+			"input": "1000",
+			"output": "906609"
+		}
 	],
 	"euler5": [
-		{ "input": "1 10", "output": "2520" },
-		{ "input": "1 20", "output": "232792560" }
+		{
+			"input": "1 10",
+			"output": "2520"
+		},
+		{
+			"input": "1 20",
+			"output": "232792560"
+		}
 	],
 	"euler6": [
-		{ "input": "10", "output": "2640" },
-		{ "input": "100", "output": "25164150" }
+		{
+			"input": "10",
+			"output": "2640"
+		},
+		{
+			"input": "100",
+			"output": "25164150"
+		}
 	],
 	"euler7": [
-		{ "input": "6", "output": "13" },
-		{ "input": "10001", "output": "104743" }
+		{
+			"input": "6",
+			"output": "13"
+		},
+		{
+			"input": "10001",
+			"output": "104743"
+		}
 	],
 	"euler8": [
 		{
@@ -44,12 +104,24 @@
 		}
 	],
 	"euler9": [
-		{ "input": "12", "output": "60" },
-		{ "input": "1000", "output": "31875000" }
+		{
+			"input": "12",
+			"output": "60"
+		},
+		{
+			"input": "1000",
+			"output": "31875000"
+		}
 	],
 	"euler10": [
-		{ "input": "10", "output": "17" },
-		{ "input": "2000000", "output": "142913828922" }
+		{
+			"input": "10",
+			"output": "17"
+		},
+		{
+			"input": "2000000",
+			"output": "142913828922"
+		}
 	],
 	"euler11": [
 		{
@@ -82,21 +154,83 @@
 		}
 	],
 	"euler15": [
-		{ "input": "0 8", "output": "1" },
-		{ "input": "2 7", "output": "36" },
-		{ "input": "3 4", "output": "35" },
-		{ "input": "3 8", "output": "165" },
-		{ "input": "4 4", "output": "70" },
-		{ "input": "6 2", "output": "28" },
-		{ "input": "6 5", "output": "462" },
-		{ "input": "6 11", "output": "12376" },
-		{ "input": "10 7", "output": "19448" },
-		{ "input": "8 8", "output": "12870" },
-		{ "input": "8 9", "output": "24310" },
-		{ "input": "14 7", "output": "116280" },
-		{ "input": "3 10", "output": "286" },
-		{ "input": "6 9", "output": "5005" },
-		{ "input": "10 10", "output": "184756" },
-		{ "input": "20 20", "output": "137846528820" }
+		{
+			"input": "0 8",
+			"output": "1"
+		},
+		{
+			"input": "2 7",
+			"output": "36"
+		},
+		{
+			"input": "3 4",
+			"output": "35"
+		},
+		{
+			"input": "3 8",
+			"output": "165"
+		},
+		{
+			"input": "4 4",
+			"output": "70"
+		},
+		{
+			"input": "6 2",
+			"output": "28"
+		},
+		{
+			"input": "6 5",
+			"output": "462"
+		},
+		{
+			"input": "6 11",
+			"output": "12376"
+		},
+		{
+			"input": "10 7",
+			"output": "19448"
+		},
+		{
+			"input": "8 8",
+			"output": "12870"
+		},
+		{
+			"input": "8 9",
+			"output": "24310"
+		},
+		{
+			"input": "14 7",
+			"output": "116280"
+		},
+		{
+			"input": "3 10",
+			"output": "286"
+		},
+		{
+			"input": "6 9",
+			"output": "5005"
+		},
+		{
+			"input": "10 10",
+			"output": "184756"
+		},
+		{
+			"input": "20 20",
+			"output": "137846528820"
+		}
+	],
+	"euler16": [
+		{
+			"input": "15",
+			"output": "26"
+		},
+		{
+			"input": "64",
+			"output": "88"
+		},
+		{
+			"input": "1000",
+			"output": "1366"
+		}
 	]
 }
