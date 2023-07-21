@@ -1,6 +1,6 @@
 {
 	"ignoredFolders": [".git"],
-	"ignoredExts": ["exe", "o", "class", "pyc", "pdb", "jar", "md", "hi"],
+	"ignoredExts": ["exe", "o", "obj", "class", "pyc", "pdb", "jar", "md", "hi"],
 	"extToCmd": {
 		"js": "node <name>.js <input>",
 		"py": "py <name>.py <input>",
@@ -12,7 +12,8 @@
 		"lsp": "sbcl --noinform --load <name>.lsp --quit <input>",
 		"rb": "ruby <name>.rb <input>",
 		"kt": ["kotlinc <name>.kt -include-runtime -d <name>.jar", "java -jar <name>.jar <input>"],
-		"hs": ["ghc <name>.hs", "<name>.exe <input>"]
+		"hs": ["ghc <name>.hs", "<name>.exe <input>"],
+		"asm": ["nasm -fwin32 <name>.asm -o <name>.obj", "gcc -m32 -o <name> <name>.obj"]
 	},
 	"optimizedCmd": {
 		"c": {

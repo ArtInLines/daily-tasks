@@ -3,6 +3,7 @@ __pycache__/
 *.exe
 *.class
 *.o
+*.obj
 *.pyc
 *.pdb
 *.jar
