@@ -50,7 +50,7 @@ function sumHundreds(n) {
 	}
 
 	let mod = n % 100;
-	out += sumTens(mod);
+	out += sumNumberLetters(mod);
 	out += mod * and;
 	out += (mod + 1) * powers[0];
 	out += (mod + 1) * ones[Math.floor(n / 100) - 1];
