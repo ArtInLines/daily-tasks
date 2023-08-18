@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-int longestValidParentheses(char * s){
+int longestValidParentheses(char *s){
     int maxLen  = 0,
         len     = 0,
         i       = 0,
@@ -30,9 +30,9 @@ int longestValidParentheses(char * s){
     return maxLen;
 }
 
-int main(int argc, char const *argv[])
+int main(int argc, char **argv)
 {
-	int res = longestValidParentheses(argv[1]);
+	int res = (argc == 1) ? 0 : longestValidParentheses(argv[1]);
 	printf("%d\n", res);
 	return 0;
 }
