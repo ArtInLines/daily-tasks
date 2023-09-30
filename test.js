@@ -12,7 +12,7 @@ const CONFIG = JSON.parse(fs.readFileSync('./config.json', { encoding: 'utf-8' }
 // Since kotlin programs should still be accepted, the time-limit for commands is currently set at 8s
 const DEFAULT_TIME_LIMIT = 4000; // in ms
 const BENCHMARK_TIME_LIMIT = 15 * 1000; // in ms
-const SPECIAL_COMP_TIME_LIMITS = { kt: 10000 };
+const SPECIAL_COMP_TIME_LIMITS = { kt: 15000, hs: 6000 };
 const SPECIAL_RUN_TIME_LIMITS = {};
 
 // TODO: Rename "Problems" to tasks or something like that?
