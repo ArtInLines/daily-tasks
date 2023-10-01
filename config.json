@@ -13,7 +13,8 @@
 		"rb": "ruby <name>.rb <input>",
 		"kt": ["kotlinc <name>.kt -include-runtime -d <name>.jar", "java -jar <name>.jar <input>"],
 		"hs": ["ghc <name>.hs", "<name>.exe <input>"],
-		"asm": ["nasm -fwin32 <name>.asm -o <name>.obj", "gcc -m32 -o <name> <name>.obj", "<name> <input>"]
+		"asm": ["nasm -fwin32 <name>.asm -o <name>.obj", "gcc -m32 -o <name> <name>.obj", "<name> <input>"],
+		"zig": ["zig build-exe <name>.zig", "<name>.exe <input>"]
 	},
 	"optimizedCmd": {
 		"c": {
