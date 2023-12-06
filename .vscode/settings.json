@@ -1,0 +1,9 @@
+{
+	"files.associations": {
+		"*.pl": "prolog",
+		"*.rb": "ruby",
+		"day23_01.h": "c",
+		"stdio.h": "c",
+		"day23_02.h": "c"
+	}
+}

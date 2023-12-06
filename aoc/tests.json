@@ -54,5 +54,33 @@
 			"input": "inputs/23-01_2.txt",
 			"output": "53894"
 		}
+	],
+	"day23_02_part1": [
+		{
+			"input": "inputs/23-02_1.txt 12 13 14",
+			"output": "8"
+		},
+		{
+			"input": "inputs/23-02_2.txt 12 13 14",
+			"output": "2256"
+		},
+		{
+			"input": "inputs/23-02_3.txt 12 13 14",
+			"output": "121"
+		}
+	],
+	"day23_02_part2": [
+		{
+			"input": "inputs/23-02_1.txt",
+			"output": "2286"
+		},
+		{
+			"input": "inputs/23-02_2.txt",
+			"output": "74229"
+		},
+		{
+			"input": "inputs/23-02_3.txt",
+			"output": "14961"
+		}
 	]
 }
