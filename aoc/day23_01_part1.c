@@ -1,4 +1,6 @@
-#include "day23_01.h"
+#include <stdio.h>
+#include <stdbool.h>
+#include "fs.h"
 
 size_t part1(const char **lines, int line_count)
 {

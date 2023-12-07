@@ -1,4 +1,6 @@
-#include "day23_01.h"
+#include <stdio.h>
+#include <stdbool.h>
+#include "fs.h"
 
 typedef struct SV {
 	const char *s;

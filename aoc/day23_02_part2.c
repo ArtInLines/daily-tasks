@@ -1,4 +1,7 @@
-#include "day23_02.h"
+#include <assert.h>
+#include <stdio.h>
+#include "fs.h"
+#include "sv.h"
 
 uint32_t part2(const char *text, size_t text_size)
 {
