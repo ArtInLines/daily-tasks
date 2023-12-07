@@ -65,3 +65,10 @@ uint32_t sv_parse_u32(SV sv, size_t *len)
 	*len = i;
 	return out;
 }
+
+size_t sv_index_of(SV sv, char c)
+{
+	size_t i = 0;
+	while (i < sv.len && sv.str[i] != c) i++;
+	return i;
+}
