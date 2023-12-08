@@ -110,5 +110,25 @@
 			"input": "inputs/23-03_3.txt",
 			"output": "52131"
 		}
+	],
+	"day23_04_part1": [
+		{
+			"input": "inputs/23-04_1.txt",
+			"output": "13"
+		},
+		{
+			"input": "inputs/23-04_2.txt",
+			"output": "25571"
+		}
+	],
+	"day23_04_part2": [
+		{
+			"input": "inputs/23-04_1.txt",
+			"output": "30"
+		},
+		{
+			"input": "inputs/23-04_2.txt",
+			"output": "8805731"
+		}
 	]
 }
