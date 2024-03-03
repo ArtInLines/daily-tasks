@@ -107,7 +107,7 @@ const getExtVersions = (ext, versions) => {
 		.map((v) => {
 			if (v === 'none') return [[v, CONFIG.extToCmd[ext]]];
 			else if (v === 'all') {
-				if (CONFIG.optimizedCmd[ext] === undefined) return [[CONFIG.extToCmd[ext], v]];
+				if (CONFIG.optimizedCmd[ext] === undefined) return [['none', CONFIG.extToCmd[ext]]];
 				else return [['none', CONFIG.extToCmd[ext]], ...Object.entries(CONFIG.optimizedCmd[ext])];
 			} else if (CONFIG.optimizedCmd[ext] !== undefined) {
 				if (CONFIG.optimizedCmd[ext][v] !== undefined) return [[v, CONFIG.optimizedCmd[ext][v]]];
@@ -236,7 +236,7 @@ function getProblemFiles(jsonpaths, langs, problems, allTests, allLangs) {
 
 async function runCommand(cmd, f, input = null, timelimit = DEFAULT_TIME_LIMIT, silent = false) {
 	let start = Date.now();
-	if (silent) cmd = cmd + ' >nul 2>nul';
+	if (silent) cmd = cmd + ' >nul 2>nul'; // @TODO: Only works on windows
 	let res = await exec(cmd, { cwd: path.dirname(f), signal: AbortSignal.timeout(timelimit), windowsHide: true }).catch((reason) => {
 		if (silent) return null;
 
