@@ -14,7 +14,8 @@
 		"kt": ["kotlinc <name>.kt -include-runtime -d <name>.jar", "java -jar <name>.jar <input>"],
 		"hs": ["ghc <name>.hs", "<name>.exe <input>"],
 		"asm": ["nasm -fwin32 <name>.asm -o <name>.obj", "gcc -m32 -o <name> <name>.obj", "<name> <input>"],
-		"zig": ["zig build-exe <name>.zig", "<name>.exe <input>"]
+		"zig": ["zig build-exe <name>.zig", "<name>.exe <input>"],
+		"odin": ["odin build <name>.odin -out:<name>.exe -file -o:none", "<name> <input>"]
 	},
 	"optimizedCmd": {
 		"c": {
@@ -35,6 +36,11 @@
 		"kt": {
 			"O1": ["kotlinc-native <name>.kt -o <name>-O1", "<name>-O1 <input>"],
 			"O2": ["kotlinc-native <name>.kt -o <name>-O2 -opt", "<name>-O2 <input>"]
+		},
+		"odin": {
+			"O1": ["odin build <name>.odin -out:<name>-O1.exe -file -o:minimal", "<name>-O1 <input>"],
+			"O2": ["odin build <name>.odin -out:<name>-O2.exe -file -o:speed", "<name>-O2 <input>"],
+			"O3": ["odin build <name>.odin -out:<name>-O3.exe -file -o:aggressive", "<name>-O3 <input>"]
 		}
 	}
 }
