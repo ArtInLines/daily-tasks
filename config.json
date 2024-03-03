@@ -3,7 +3,7 @@
 	"ignoredExts": ["exe", "o", "obj", "class", "pyc", "pdb", "jar", "md", "hi"],
 	"extToCmd": {
 		"js": "node <name>.js <input>",
-		"py": "py <name>.py <input>",
+		"py": "python <name>.py <input>",
 		"c": ["gcc -o <name> <name>.c", "<name> <input>"],
 		"rs": ["rustc -o <name>.exe <name>.rs", "<name> <input>"],
 		"java": ["javac <name>.java", "java <name> <input>"],
@@ -31,6 +31,10 @@
 			"O1": "julia -O1 <name>.jl <input>",
 			"O2": "julia -O2 <name>.jl <input>",
 			"O3": "julia -O3 <name>.jl <input>"
+		},
+		"kt": {
+			"O1": ["kotlinc-native <name>.kt -o <name>-O1", "<name>-O1 <input>"],
+			"O2": ["kotlinc-native <name>.kt -o <name>-O2 -opt", "<name>-O2 <input>"]
 		}
 	}
 }
