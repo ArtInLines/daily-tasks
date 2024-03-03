@@ -44,18 +44,6 @@ pub fn main() !void {
 	defer args.clearAndFree();
 	_          = argsIter.skip();
 	var   arg  = argsIter.next();
-	var   text = try alloc.alloc(u8, 256*1028);
-	if (arg) |x| {
-		if (x.len == 0 or x[0] < '0' or x[0] > '9')  {
-			@memset(text, 0);
-			const file = try std.fs.cwd().openFile(x, .{});
-			defer file.close();
-			text.len   = try std.os.read(file.handle, text);
-			argsIter.deinit();
-			argsIter   = .{ .inner                          = try std.process.ArgIteratorGeneral(.{}).init(alloc, text) };
-			arg        = argsIter.next();
-		}
-	}
 	const stdout = std.io.getStdOut().writer();
 	while (arg) |x| {
 		const num = try std.fmt.parseInt(u32, x, 10);
