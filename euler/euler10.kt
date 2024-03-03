@@ -47,7 +47,7 @@ fun f(n: Int): Long {
 	if (n <= 10) return mySum(primesBefore10());
 	else {
 		val a: Long = mySum(primesBefore10());
-		val b: Long = mySum(primesAfter10(2_000_000));
+		val b: Long = mySum(primesAfter10(n));
 		return a + b
 	}
 }
